@@ -1,0 +1,5 @@
+<resources>
+
+    <string name="app_name">ClearBladeAndroidAPI</string>
+	<string name="message_service">MessageService</string>
+</resources>

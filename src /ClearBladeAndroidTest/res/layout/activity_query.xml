@@ -1,0 +1,141 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".QueryActivity" >
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="Collection Id:" />
+
+    <EditText
+        android:id="@+id/uriEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textView1"
+        android:ems="10"
+        android:text="523876618ab3a371add29eef" >
+
+        <requestFocus />
+    </EditText>
+
+    <TextView
+        android:id="@+id/deleteResultTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/conditionSpinner"
+        android:text="Field" />
+
+    <EditText
+        android:id="@+id/fieldEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/deleteResultTextView"
+        android:layout_below="@+id/deleteResultTextView"
+        android:ems="10"
+        android:text="firstName" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/fieldEditText"
+        android:text="Value:" />
+
+    <EditText
+        android:id="@+id/valueEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textView3"
+        android:ems="10"
+        android:text="Aaron" />
+
+    <Button
+        android:id="@+id/andButton"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/valueEditText"
+        android:layout_toRightOf="@+id/textView1"
+        android:text="and" 
+        android:onClick="andClick"/>
+
+    <Spinner
+        android:id="@+id/conditionSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/queryStringTextView"
+        android:entries="@array/query_types"
+        android:prompt="@string/query_prompt" />
+
+    <TextView
+        android:id="@+id/queryStringTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/conditionSpinner"
+        android:layout_below="@+id/uriEditText"
+        android:text="query string" />
+
+    <Button
+        android:id="@+id/clearButton"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/orButton"
+        android:layout_alignBottom="@+id/orButton"
+        android:layout_toRightOf="@+id/orButton"
+        android:text="clear"
+        android:onClick="clearClick" />
+
+    <Button
+        android:id="@+id/orButton"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/andButton"
+        android:layout_alignBottom="@+id/andButton"
+        android:layout_toRightOf="@+id/andButton"
+        android:text="or" 
+        android:onClick="orClick"/>
+
+    <Button
+        android:id="@+id/runCollectionQueryButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/andButton"
+        android:layout_marginTop="22dp"
+        android:onClick="runAsQuery"
+        android:text="Run Fetch" />
+
+    <Button
+        android:id="@+id/queryRemoveButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/runCollectionQueryButton"
+        android:text="Run Remove"
+        android:onClick="runRemove" />
+
+    <TextView
+        android:id="@+id/resultTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/queryRemoveButton"
+        android:text="Results" />
+
+</RelativeLayout>

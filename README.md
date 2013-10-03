@@ -22,6 +22,16 @@ Setup as Android Library
 Setup as Eclipse project
 ------------------------
 
+Android App Configuration
+-------------------------
+The Android-API attempts to assist in the threading needs of android.  To use the background android service provided by this libary you will need to add the following declaration to your android manifest.
+     <service
+		  android:name="com.clearblade.platform.api.internal.MessageService"
+		  android:icon="@drawable/ic_launcher"
+		  android:label="@string/message_service"
+		  >
+		</service> 
+This declaration is included in the test application.  Failing to include this declration will mostly likely result in a noop behavior from the app and a quiet runtime exception in the console.
 
 Additional Credits and helpful links
 ------------------------------------

@@ -30,7 +30,7 @@ public final class R {
         public static final int action_settings=0x7f090026;
         public static final int ageEditText=0x7f090009;
         public static final int andButton=0x7f09001c;
-        public static final int button1=0x7f090004;
+        public static final int button1=0x7f090003;
         public static final int clearButton=0x7f09001e;
         public static final int conditionSpinner=0x7f090019;
         public static final int createItemButton=0x7f09000a;
@@ -48,7 +48,7 @@ public final class R {
         public static final int queryRemoveButton=0x7f090002;
         public static final int queryStringTextView=0x7f09001d;
         public static final int resultCreateTextView=0x7f09000b;
-        public static final int resultTextView=0x7f090003;
+        public static final int resultTextView=0x7f090004;
         public static final int resultUpdateTextView=0x7f090025;
         public static final int runCollectionQueryButton=0x7f090013;
         public static final int scrollView1=0x7f090016;

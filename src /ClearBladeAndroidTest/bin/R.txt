@@ -5,7 +5,7 @@ int drawable ic_launcher 0x7f020000
 int id action_settings 0x7f090026
 int id ageEditText 0x7f090009
 int id andButton 0x7f09001c
-int id button1 0x7f090004
+int id button1 0x7f090003
 int id clearButton 0x7f09001e
 int id conditionSpinner 0x7f090019
 int id createItemButton 0x7f09000a
@@ -23,7 +23,7 @@ int id publishEditText 0x7f090017
 int id queryRemoveButton 0x7f090002
 int id queryStringTextView 0x7f09001d
 int id resultCreateTextView 0x7f09000b
-int id resultTextView 0x7f090003
+int id resultTextView 0x7f090004
 int id resultUpdateTextView 0x7f090025
 int id runCollectionQueryButton 0x7f090013
 int id scrollView1 0x7f090016

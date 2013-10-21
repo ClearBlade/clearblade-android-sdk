@@ -4,9 +4,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.Set;
 
-import com.clearblade.platform.api.internal.PlatformCallback;
+import org.json.JSONObject;
+
 import com.clearblade.platform.api.internal.DataTask;
+import com.clearblade.platform.api.internal.PlatformCallback;
 import com.clearblade.platform.api.internal.RequestEngine;
 import com.clearblade.platform.api.internal.RequestProperties;
 import com.google.gson.JsonArray;
@@ -330,6 +334,10 @@ public class Query {
 	
 	}
 	
+//	public Item[] fetch(){
+//		return null;
+//	}
+	
 	protected String queryAsJsonString() {
 		ArrayList<QueryObj> temp = queryObjs;
 		if (queryObjs.size()==0) {
@@ -553,26 +561,35 @@ public class Query {
 	 * @private
 	 * @param json A JSON Array in string format
 	 * @return Item[] An array of Items
-	 * @throws ClearBladeException will be thrown if Collection was Empty!
+	 * @throws ClearBladeException will be thrown on error!
 	 */
 	private Item[] convertJsonArrayToItemArray(String json) {
 		// Parse the JSON string in to a JsonElement
-		JsonElement jsonArrayString = new JsonParser().parse(json);
+		JsonElement jsonElement = new JsonParser().parse(json);
 		// Store the JsonElement as a JsonArray
-		JsonArray array = jsonArrayString.getAsJsonArray();
-		// If array size is 0, the Collection was empty; Throw Error
-		if(array.size() == 0) {
-		//	throw new ClearBladeException("Collection was Empty!");
+		JsonArray array = jsonElement.getAsJsonArray();
+		ArrayList<Item> items = new ArrayList<Item>();// new Item[array.size()];
+		Iterator<JsonElement> iter = array.iterator();
+		while(iter.hasNext()){
+			
+			JsonElement val = iter.next();
+			if (val.isJsonObject()){
+				JsonObject temp = val.getAsJsonObject();
+				if (temp.entrySet().size()==0){
+					return (new Item[0]);
+				}else {
+					for (Entry<String, JsonElement> entry : temp.entrySet()) {
+					    JsonObject elementTemp = entry.getValue().getAsJsonObject();//.getAsJsonArray("unterfeld");
+					    items.add(new Item(elementTemp.toString(), getCollectionId()));
+					    System.out.println("lets take a peak at the member");
+					}
+				}
+			} 
 		}
 		
-		// Create Item Array and initialize its values
-		Item[] items = new Item[array.size()];
-		
-		for(int i = 0, len = array.size(); i < len; i++){
-			items[i] = new Item(array.get(i).getAsJsonObject().toString(), this.collectionId);
-		}
-		
-		return items;
+		Item[] ret = new Item[items.size()];
+		ret = (Item[]) items.toArray(ret);
+		return ret;
 	}
 	
 	

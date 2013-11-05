@@ -26,7 +26,7 @@ public class Message {
 	
 	//MessageCallback callback;
 	
-	public void subscribe(String topic, AbstractMessageCallback back){
+	public void subscribe(String topic, MessageCallback back){
 		
 
 	    //send the subscribe message

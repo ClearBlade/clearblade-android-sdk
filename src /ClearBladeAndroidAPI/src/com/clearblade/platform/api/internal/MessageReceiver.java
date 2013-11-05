@@ -5,33 +5,33 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.clearblade.platform.api.AbstractMessageCallback;
+import com.clearblade.platform.api.MessageCallback;
 
 
  public class MessageReceiver extends BroadcastReceiver{
-	 AbstractMessageCallback publishCallback;
-	 AbstractMessageCallback subscribeCallback;
-	 AbstractMessageCallback messageReceivedCallback;
-	 AbstractMessageCallback unsubscribeCallback;
-	 AbstractMessageCallback disconnectCallback;
+	 MessageCallback publishCallback;
+	 MessageCallback subscribeCallback;
+	 MessageCallback messageReceivedCallback;
+	 MessageCallback unsubscribeCallback;
+	 MessageCallback disconnectCallback;
 	 
-	 public void addPublishCallback(AbstractMessageCallback back) {
+	 public void addPublishCallback(MessageCallback back) {
 		 publishCallback = back;
 	 }
 	 
-	 public void addSubscribeCallback(AbstractMessageCallback back) {
+	 public void addSubscribeCallback(MessageCallback back) {
 		 subscribeCallback = back;
 	 }
 	 
-	 public void addMessageReceivedCallback( AbstractMessageCallback back) {
+	 public void addMessageReceivedCallback( MessageCallback back) {
 		 messageReceivedCallback = back;
 	 }
 	 
-	 public void addUnsubscribeCallback(AbstractMessageCallback back) {
+	 public void addUnsubscribeCallback(MessageCallback back) {
 		 messageReceivedCallback = back;
 	 }
 	 
-	 public void addDisconnectCallback( AbstractMessageCallback back) {
+	 public void addDisconnectCallback( MessageCallback back) {
 		 messageReceivedCallback = back;
 	 }
 	 

@@ -23,7 +23,7 @@ import android.provider.Settings.Secure;
 import android.util.Log;
 
 import com.clearblade.platform.api.Item;
-import com.clearblade.platform.api.AbstractMessageCallback;
+import com.clearblade.platform.api.MessageCallback;
 
 
 public class MessageService extends Service implements MqttCallback{
@@ -113,14 +113,14 @@ public class MessageService extends Service implements MqttCallback{
 		registerReceiver(mConnectivityReceiver,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 		
 		messageReceiver = new MessageReceiver();
-		messageReceiver.addSubscribeCallback(new AbstractMessageCallback(){
+		messageReceiver.addSubscribeCallback(new MessageCallback(){
 			@Override
 			public void done(String topic, String message) {
 				subscribe(topic);
 			}	
 		});
 		
-		messageReceiver.addPublishCallback(new AbstractMessageCallback(){
+		messageReceiver.addPublishCallback(new MessageCallback(){
 			@Override
 			public void done(String topic, String message) {
 				publish(topic,message);

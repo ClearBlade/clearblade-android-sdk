@@ -15,7 +15,7 @@
 	         android:layout_alignParentLeft="true"
 	         android:layout_below="@+id/deleteResultTextView"
 	         android:ems="10"
-	         android:text="https://platform.clearblade.com" />
+	         android:text="http://ec2-23-23-31-115.compute-1.amazonaws.com:8080" />
 
 	     <TextView
 	         android:id="@+id/deleteResultTextView"
@@ -34,7 +34,7 @@
 	         android:layout_below="@+id/resultTextView"
 	         android:ems="10"
 	         android:inputType="textPersonName"
-	         android:text="523876348ab3a371add29eee" >
+	         android:text="8e858ba70aeaeda0fae0a1ebd3c001" >
 
 	         <requestFocus />
 	     </EditText>
@@ -57,7 +57,7 @@
 	         android:layout_marginTop="16dp"
 	         android:ems="10"
 	         android:inputType="textPersonName"
-	         android:text="CK98W1USCR4J09SJCJNGD21BE6QDWP" />
+	         android:text="8E858BA70A988CCBDA899D9FA6BA01" />
 
 	     <Button
 	         android:id="@+id/queryRemoveButton"

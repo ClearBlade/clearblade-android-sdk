@@ -7,11 +7,7 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
-
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
-
-import com.clearblade.platform.api.MessageCallback;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -26,9 +22,12 @@ import android.os.IBinder;
 import android.provider.Settings.Secure;
 import android.util.Log;
 
+import com.clearblade.platform.api.Item;
+import com.clearblade.platform.api.AbstractMessageCallback;
+
 
 public class MessageService extends Service implements MqttCallback{
-	public String url = "tcp://ec2-23-23-31-115.compute-1.amazonaws.com:1883";
+	public String url = "tcp://platform.clearblade.com:1883";
 	public final static String 		MESSAGE_ACTION_SUBSCRIBE = "MESSAGE_ACTION_SUBSCRIBE";
 	public final static String 		MESSAGE_ACTION_PUBLISH = "MESSAGE_ACTION_PUBLISH";
 	public final static String 		MESSAGE_ACTION_UNSUBSCRIBE = "MESSAGE_ACTION_UNSUBSCRIBE";
@@ -78,7 +77,8 @@ public class MessageService extends Service implements MqttCallback{
 		//sets the clean session option, where is the cheapest place to set this?
 		opts = new MqttConnectOptions();
 		opts.setCleanSession(true);
-		
+		opts.setUserName(Util.getAppKey());
+		opts.setPassword(Util.getAppSecret().toCharArray());
 		String action = intent.getAction();
 
 		Log.i(DEBUG_TAG,"Received action of " + action);
@@ -113,14 +113,14 @@ public class MessageService extends Service implements MqttCallback{
 		registerReceiver(mConnectivityReceiver,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 		
 		messageReceiver = new MessageReceiver();
-		messageReceiver.addSubscribeCallback(new MessageCallback(){
+		messageReceiver.addSubscribeCallback(new AbstractMessageCallback(){
 			@Override
 			public void done(String topic, String message) {
 				subscribe(topic);
 			}	
 		});
 		
-		messageReceiver.addPublishCallback(new MessageCallback(){
+		messageReceiver.addPublishCallback(new AbstractMessageCallback(){
 			@Override
 			public void done(String topic, String message) {
 				publish(topic,message);
@@ -235,6 +235,7 @@ public class MessageService extends Service implements MqttCallback{
 		Intent intent = new Intent();
 		intent.setAction(MESSAGE_ACTION_MESSAGE_RECEIVED);
 		intent.putExtra("topic", topic);
+		//intent.putExtra("item", new Item(message.getPayload()));
 		intent.putExtra("message", new String(message.getPayload()));
 		sendBroadcast(intent);
 	}

@@ -101,6 +101,25 @@ public class Item {
 		this.request = new RequestEngine();
 
 	}
+	
+	protected Item (JsonObject json, String collectionId){
+		this.collectionId = collectionId;
+		this.json = json;
+		JsonElement itemId = this.json.get("itemId");
+		JsonElement created = this.json.get("_created");
+
+		if(itemId == null){
+			this.json.addProperty("itemId", "");
+		}
+
+		if(created == null){
+			long _created = new Date().getTime();
+			this.json.addProperty("_created", _created);
+			this.json.addProperty("_lastModified", _created);
+		}
+		this.changes = new JsonObject();
+		this.request = new RequestEngine();
+	}
 
 	/**
 	 * method used to clear the changes object.

@@ -8,9 +8,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.clearblade.platform.api.AbstractMessageCallback;
 import com.clearblade.platform.api.ClearBladeException;
 import com.clearblade.platform.api.Message;
-import com.clearblade.platform.api.MessageCallback;
 
 public class MessagingActivity extends Activity {
 
@@ -40,7 +40,7 @@ public class MessagingActivity extends Activity {
 			
 			
 			message.subscribe(topicText.getText().toString(),
-					new MessageCallback() {
+					new AbstractMessageCallback() {
 	
 						@Override
 						public void done(String topic, String message) {

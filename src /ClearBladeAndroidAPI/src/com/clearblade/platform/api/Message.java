@@ -16,8 +16,7 @@ public class Message {
 	public Message(Context ctx){
 		context = ctx;
 		//Start our own service
-	    Intent intent = new Intent(context,
-	    		com.clearblade.platform.api.internal.MessageService.class);
+	    Intent intent = new Intent(context, MessageService.class);
 	    intent.setAction(MessageService.MESSAGE_ACTION_START);
 	    //intent.putExtra("topic", topic);
 	    context.startService(intent);
@@ -27,7 +26,7 @@ public class Message {
 	
 	//MessageCallback callback;
 	
-	public void subscribe(String topic, MessageCallback back){
+	public void subscribe(String topic, AbstractMessageCallback back){
 		
 
 	    //send the subscribe message

@@ -140,7 +140,7 @@ public class ClearBlade {
 		Util.setAppKey(myAppKey);
 		Util.setAppSecret(myAppSecret);
 		masterSecret = null;
-		uri =  "https://platform.clearblade.com";
+		uri =  "https://ec2-23-23-31-115.compute-1.amazonaws.com:8080";
 		
 		logging = false;
 		callTimeOut = 30000;

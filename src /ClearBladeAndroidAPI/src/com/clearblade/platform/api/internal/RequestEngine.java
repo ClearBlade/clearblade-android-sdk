@@ -253,26 +253,29 @@ public class RequestEngine {
 	 * @throws NoSuchAlgorithmException
 	 */
 	private SSLContext createUntrustedManager(SSLContext ctx) throws KeyManagementException, NoSuchAlgorithmException{
-		ctx = SSLContext.getInstance("TLS");
+		ctx = SSLContext.getInstance("SSL");
 		ctx.init(null, new TrustManager[] {
-		  new X509TrustManager() {
-		    public void checkClientTrusted(X509Certificate[] chain, String authType) {}
-		    public void checkServerTrusted(X509Certificate[] chain, String authType) {}
-		    public java.security.cert.X509Certificate[] getAcceptedIssuers() { return new java.security.cert.X509Certificate[]{}; }
+			
+	       new X509TrustManager() {
+	          public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+	            return null;
+	          }
+
 			@Override
-			public void checkClientTrusted(
-					java.security.cert.X509Certificate[] arg0, String arg1)
+			public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType)
 					throws CertificateException {
+				System.out.println("AARON : checking for client trusted");
+			}
+
+			@Override
+			public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType)
+					throws CertificateException {
+				System.out.println("AARON : checking for server trusted");
 				
 			}
-			@Override
-			public void checkServerTrusted(
-					java.security.cert.X509Certificate[] arg0, String arg1)
-					throws CertificateException {
-				
-			}
-		  }
-		}, null);
+
+	       }
+		}, new java.security.SecureRandom());
 		return ctx;
 	}
 

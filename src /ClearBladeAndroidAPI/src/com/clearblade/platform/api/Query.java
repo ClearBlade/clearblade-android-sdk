@@ -578,11 +578,13 @@ public class Query {
 				if (temp.entrySet().size()==0){
 					return (new Item[0]);
 				}else {
-					for (Entry<String, JsonElement> entry : temp.entrySet()) {
-					    JsonObject elementTemp = entry.getValue().getAsJsonObject();//.getAsJsonArray("unterfeld");
-					    items.add(new Item(elementTemp.toString(), getCollectionId()));
-					    System.out.println("lets take a peak at the member");
-					}
+					items.add(new Item(temp, getCollectionId()));
+//					for (Entry<String, JsonElement> entry : temp.entrySet()) {
+//					    JsonObject elementTemp = entry.getValue().getAsJsonObject();//.getAsJsonArray("unterfeld");
+//					    
+//					    items.add(new Item(entry, getCollectionId()));
+//					    System.out.println("lets take a peak at the member");
+//					}
 				}
 			} 
 		}

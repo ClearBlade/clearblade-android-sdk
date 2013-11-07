@@ -308,18 +308,48 @@ public class Item {
 	 * @throws ClearBladeException will be thrown if no Item is found or if the API call failed
 	 */
 	
-	public void load (String itemId) throws ClearBladeException {
+	public void load (String itemId, final DataCallback callback ) throws ClearBladeException {
 		// create the query string to look for the object
-		JsonObject queryString = new JsonObject();
-		queryString.addProperty("itemId", itemId);
-		RequestProperties headers = new RequestProperties.Builder().method("GET").endPoint("apidev/" + collectionId).qs(queryString).build();
-		request.setHeaders(headers);
+		loadSetup(itemId);
+//		PlatformResponse<String> result = request.execute();
+//		if(result.getError()) {
+//			throw new ClearBladeException("Call to Load failed:"+result.getData());
+//		} else {
+//			this.json = convertJsonArrayToJsonObject(result.getData());
+//		}
+		DataTask asyncFetch = new DataTask(new PlatformCallback(this, callback){
+			@Override
+			public void done(String response) {
+				_item.json = convertJsonToJsonObject(response);
+				Item[] ret = {_item}; 
+				callback.done(ret);
+			}
+
+			@Override
+			public void error(ClearBladeException exception) {
+				callback.error(exception);
+			}
+			
+		});
+		asyncFetch.execute(request);
+	}
+	
+	public void loadSync(String itemId) throws ClearBladeException{
+		loadSetup(itemId);
 		PlatformResponse<String> result = request.execute();
 		if(result.getError()) {
 			throw new ClearBladeException("Call to Load failed:"+result.getData());
 		} else {
 			this.json = convertJsonArrayToJsonObject(result.getData());
 		}
+	}
+	
+	private void loadSetup(String itemId){
+		JsonObject queryString = new JsonObject();
+		queryString.addProperty("itemId", itemId);
+		RequestProperties headers = new RequestProperties.Builder().method("GET").endPoint("api/" + collectionId).qs(queryString).build();
+		request.setHeaders(headers);
+		
 	}
 
 	/**
@@ -332,20 +362,8 @@ public class Item {
 	 * @throws ClearBladeException will be thrown if no Item is found or if the API call failed
 	 */
 	public void save(final DataCallback callback)  {
-		RequestProperties headers = null;
-		if(this.getString("itemId") == null ) {
-			headers = new RequestProperties.Builder().method("POST").endPoint("apidev/" + collectionId).body(this.json).build();
-		} else {
-			// Create Payload object
-			JsonObject payload = new JsonObject();
-			payload.addProperty("$set", this.changes.toString());
-			JsonObject query = new JsonObject();
-			query.addProperty("itemId", this.getString("itemId"));
-			payload.addProperty("query", query.toString());
-			headers = new RequestProperties.Builder().method("PUT").endPoint("apidev/" + collectionId).body(payload).build();
-		}
-
-		request.setHeaders(headers);
+		
+		saveSetup();
 		
 		DataTask asyncFetch = new DataTask(new PlatformCallback(this, callback){
 
@@ -365,6 +383,35 @@ public class Item {
 		asyncFetch.execute(request);
         
 		clearChanges();
+	}
+	
+	public Item[] saveSync() throws ClearBladeException{
+		saveSetup();
+		PlatformResponse<String> result = request.execute();
+		if(result.getError()) {
+			throw new ClearBladeException("Call to Load failed:"+result.getData());
+		} else {
+			this.json = convertJsonArrayToJsonObject(result.getData());
+		}
+		Item[] ret = {this};
+		return ret; 
+	}
+	
+	private void saveSetup(){
+		RequestProperties headers = null;
+		if(this.getString("itemId") == null ) {
+			headers = new RequestProperties.Builder().method("POST").endPoint("api/" + collectionId).body(this.json).build();
+		} else {
+			// Create Payload object
+			JsonObject payload = new JsonObject();
+			payload.addProperty("$set", this.changes.toString());
+			JsonObject query = new JsonObject();
+			query.addProperty("itemId", this.getString("itemId"));
+			payload.addProperty("query", query.toString());
+			headers = new RequestProperties.Builder().method("PUT").endPoint("api/" + collectionId).body(payload).build();
+		}
+
+		request.setHeaders(headers);
 	}
 
 	/**

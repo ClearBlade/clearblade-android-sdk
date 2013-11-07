@@ -170,6 +170,12 @@ public class Collection implements Iterable<Item>{
 			
 		});
 	}
+	
+	public Item[] fetchAllSync() throws ClearBladeException{
+		Query query = new Query(collectionId);
+	
+		return query.fetchSync();
+	}
 
 	/**
 	 * Returns the query to be performed during a call to ClearBladeCollection.fetch(). 

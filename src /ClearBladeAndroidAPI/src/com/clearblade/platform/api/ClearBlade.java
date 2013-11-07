@@ -29,6 +29,8 @@ public class ClearBlade {
 
 	private static boolean allowUntrusted=false;			// if the platform has https enabled but no publically signed certificate
 	
+	
+	
 	/**
 	 * Returns the version of the API that is currently in use.
 	 * 

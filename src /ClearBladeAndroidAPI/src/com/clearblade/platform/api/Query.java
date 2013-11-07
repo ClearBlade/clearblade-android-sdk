@@ -4,13 +4,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.json.JSONObject;
 
 import com.clearblade.platform.api.internal.DataTask;
 import com.clearblade.platform.api.internal.PlatformCallback;
+import com.clearblade.platform.api.internal.PlatformResponse;
 import com.clearblade.platform.api.internal.RequestEngine;
 import com.clearblade.platform.api.internal.RequestProperties;
 import com.google.gson.JsonArray;
@@ -312,10 +309,7 @@ public class Query {
 	 * @param field - name of the column to be used for sorting in descending manner
 	 */
 	public void fetch(final DataCallback callback) {
-		String queryParam = getURLParameter();
-		RequestProperties headers = new RequestProperties.Builder().method("GET").endPoint("apidev/" +collectionId+ queryParam).build();
-		request.setHeaders(headers);
-		
+		fetchSetup();
 		DataTask asyncFetch = new DataTask(new PlatformCallback(this, callback) {
 
 			@Override
@@ -332,6 +326,25 @@ public class Query {
 		});
 		asyncFetch.execute(request);
 	
+	}
+	
+	public Item[] fetchSync() throws ClearBladeException{
+
+		fetchSetup();
+		PlatformResponse resp = request.execute();
+		Item[] ret;
+		if(resp.getError()) {
+			throw new ClearBladeException("Call to fetch failed:"+resp.getData());
+		} else {
+			ret = convertJsonArrayToItemArray((String)resp.getData());
+		}
+		return ret;
+	}
+	
+	private void fetchSetup(){
+		String queryParam = getURLParameter();
+		RequestProperties headers = new RequestProperties.Builder().method("GET").endPoint("api/" +collectionId+ queryParam).build();
+		request.setHeaders(headers);
 	}
 	
 //	public Item[] fetch(){
@@ -454,15 +467,7 @@ public class Query {
 	 * @param callback
 	 */
 	public void update(final DataCallback callback) {
-		//String queryParam = getURLParameter();
-		JsonObject payload = new JsonObject();
-		payload.addProperty("$set", this.changes.toString());
-		//JsonObject query = new JsonObject();
-		JsonElement toObject = new JsonParser().parse(queryAsJsonString());
-		payload.add("query", toObject);
-		RequestProperties headers = new RequestProperties.Builder().method("PUT").endPoint("apidev/" + collectionId).body(payload).build();
-		request.setHeaders(headers);
-		
+		updateSetup();
 		DataTask asyncFetch = new DataTask(new PlatformCallback(this, callback){
 
 			@Override
@@ -479,6 +484,28 @@ public class Query {
 		});
 		asyncFetch.execute(request);
 		changes = new JsonObject();
+	}
+	
+	public Item[] updateSync() throws ClearBladeException{
+		updateSetup();
+		PlatformResponse resp = request.execute();
+		Item[] ret;
+		if(resp.getError()) {
+			throw new ClearBladeException("Call to fetch failed:"+resp.getData());
+		} else {
+			ret = convertJsonArrayToItemArray((String)resp.getData());
+		}
+		return ret;
+	}
+	
+	private void updateSetup(){
+		JsonObject payload = new JsonObject();
+		payload.addProperty("$set", this.changes.toString());
+		//JsonObject query = new JsonObject();
+		JsonElement toObject = new JsonParser().parse(queryAsJsonString());
+		payload.add("query", toObject);
+		RequestProperties headers = new RequestProperties.Builder().method("PUT").endPoint("api/" + collectionId).body(payload).build();
+		request.setHeaders(headers);
 	}
 	
 	/**
@@ -503,7 +530,7 @@ public class Query {
 
 		String queryParam = getURLParameter();
 		
-		RequestProperties headers = new RequestProperties.Builder().method("DELETE").endPoint("apidev/" +collectionId+ queryParam).build();
+		RequestProperties headers = new RequestProperties.Builder().method("DELETE").endPoint("api/" +collectionId+ queryParam).build();
 		request.setHeaders(headers);
 		
 		DataTask asyncFetch = new DataTask(new PlatformCallback(this, callback){
@@ -521,6 +548,25 @@ public class Query {
 			
 		});
 		asyncFetch.execute(request);
+	}
+	
+	public Item[] removeSync() throws ClearBladeException{
+		removeSetup();
+		PlatformResponse resp = request.execute();
+		Item[] ret;
+		if(resp.getError()) {
+			throw new ClearBladeException("Call to fetch failed:"+resp.getData());
+		} else {
+			ret = convertJsonArrayToItemArray((String)resp.getData());
+		}
+		return ret;
+	}
+	
+	private void removeSetup(){
+		String queryParam = getURLParameter();
+		
+		RequestProperties headers = new RequestProperties.Builder().method("DELETE").endPoint("api/" +collectionId+ queryParam).build();
+		request.setHeaders(headers);
 	}
 
 	/**

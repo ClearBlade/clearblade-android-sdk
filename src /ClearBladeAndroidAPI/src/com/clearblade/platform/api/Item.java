@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.clearblade.platform.api.internal.DataTask;
 import com.clearblade.platform.api.internal.PlatformCallback;
 import com.clearblade.platform.api.internal.PlatformResponse;
-import com.clearblade.platform.api.internal.DataTask;
 import com.clearblade.platform.api.internal.RequestEngine;
 import com.clearblade.platform.api.internal.RequestProperties;
 import com.google.gson.Gson;
@@ -17,6 +17,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * This class consists exclusively of instance methods that operate on ClearBlade Items.
@@ -73,6 +74,14 @@ public class Item {
 		this.json.addProperty("_lastModified", _created);
 		this.changes = new JsonObject();
 		this.request = new RequestEngine();
+	}
+	
+	/**
+	 * Prototype to run items through the messaging
+	 * @param collectionId
+	 */
+	public void populateFromMessaging(String value) {
+		convertJsonToJsonObject(value);
 	}
 
 	/**
@@ -159,9 +168,12 @@ public class Item {
 
 	private JsonObject convertJsonToJsonObject(String json) {
 		// parse json string in to JsonElement
-		JsonElement toObject = new JsonParser().parse(json);
-		// return JsonElement as JsonObject
-		return toObject.getAsJsonObject();
+		try {
+			JsonElement toObject = new JsonParser().parse(json);
+			return toObject.getAsJsonObject();
+		}catch(JsonSyntaxException mfe){
+			return null;
+		}
 	}
 
 	/**

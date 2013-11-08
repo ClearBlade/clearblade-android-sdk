@@ -236,18 +236,29 @@ public class MessageService extends Service implements MqttCallback{
 		intent.setAction(MESSAGE_ACTION_MESSAGE_RECEIVED);
 		intent.putExtra("topic", topic);
 		//intent.putExtra("item", new Item(message.getPayload()));
-		intent.putExtra("message", new String(message.getPayload()));
+		Object obj = message.getPayload();
+		
+		intent.putExtra("message", message.getPayload());
+		
 		sendBroadcast(intent);
 	}
 
-	public void publish(String topic, String payload){
+	public void publish(String topic, byte[] payload){
 		try {
-			mqttClient.publish(topic, payload.getBytes(), 0, false);
+			mqttClient.publish(topic, payload, 0, false);
 		} catch (MqttPersistenceException e) {
 			e.printStackTrace();
 		} catch (MqttException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void publish(String topic, String payload){
+		publish(topic, payload.getBytes());
+	}
+	
+	public void publish(String topic, Item payload){
+		publish(topic, payload.toString());
 	}
 
 	public void subscribe(String topic){

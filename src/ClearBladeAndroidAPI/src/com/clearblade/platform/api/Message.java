@@ -7,12 +7,13 @@ import android.content.IntentFilter;
 import com.clearblade.platform.api.internal.MessageReceiver;
 import com.clearblade.platform.api.internal.MessageService;
 
-
+import java.util.HashSet;
 
 
 public class Message {
 	MessageReceiver messageReceiver;
 	Context context;
+	HashSet<String> subscribed;
 	public Message(Context ctx){
 		context = ctx;
 		//Start our own service
@@ -20,14 +21,18 @@ public class Message {
 	    intent.setAction(MessageService.MESSAGE_ACTION_START);
 	    //intent.putExtra("topic", topic);
 	    context.startService(intent);
-	    
+	    subscribed = new HashSet<String>();
 	    
 	}
 	
 	//MessageCallback callback;
 	
 	public void subscribe(String topic, MessageCallback back){
-		
+		if (subscribed.contains(topic)){
+			return;
+		} else {
+			subscribed.add(topic);
+		}
 
 	    //send the subscribe message
 		//serviceReceiver = new ServiceReceiver();
@@ -53,6 +58,7 @@ public class Message {
 	}
 	
 	public void unsubscribe(String topic){
+		subscribed.remove(topic);
 		Intent intent = new Intent();
 		intent.setAction(MessageService.MESSAGE_ACTION_SUBSCRIBE);
 		intent.putExtra("topic", topic);

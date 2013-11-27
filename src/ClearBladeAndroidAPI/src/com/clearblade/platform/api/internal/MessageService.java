@@ -24,10 +24,11 @@ import android.util.Log;
 
 import com.clearblade.platform.api.Item;
 import com.clearblade.platform.api.MessageCallback;
+import com.clearblade.platform.api.ClearBlade;
 
 
 public class MessageService extends Service implements MqttCallback{
-	public String url = "tcp://platform.clearblade.com:1883";
+	public String url = ClearBlade.getMessageUrl();
 	public final static String 		MESSAGE_ACTION_SUBSCRIBE = "MESSAGE_ACTION_SUBSCRIBE";
 	public final static String 		MESSAGE_ACTION_PUBLISH = "MESSAGE_ACTION_PUBLISH";
 	public final static String 		MESSAGE_ACTION_UNSUBSCRIBE = "MESSAGE_ACTION_UNSUBSCRIBE";

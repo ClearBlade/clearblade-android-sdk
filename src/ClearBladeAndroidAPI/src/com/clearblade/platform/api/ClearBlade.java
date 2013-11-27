@@ -25,6 +25,7 @@ public class ClearBlade {
 	private static boolean logging;						    // if the user wants internal logs to show. 
 	private static String masterSecret;					    // App's Admin Password; has access to Everything
 	private static String uri;								// Default URL to send Api requests to
+	private static String messageUrl;						// Default URL to connect to the message broker with
 	private static Object user;								// Current User of the application. Not implemented Yet
 
 	private static boolean allowUntrusted=false;			// if the platform has https enabled but no publically signed certificate
@@ -105,6 +106,23 @@ public class ClearBlade {
 	public static void setUri(String platformURI){
 		uri = platformURI;
 	}
+	
+	/**
+	 * Sets the url of the message broker that will be used in messaging applications
+	 * Defaults to 'tcp://platform.clearblade.com:1883'
+	 * @param messageURL the string that will be set as the url
+	 */
+	public static void setMessageUrl(String messageURL) {
+		messageUrl = messageURL;
+	}
+	
+	/**
+	 * Gets the url of the message broker that was set upon initialization
+	 * @return URL of message broker
+	 */
+	public static String getMessageUrl() {
+		return messageUrl;
+	}
 
 	/**
 	 * Allows for passing requests to an untrusted server.  This method
@@ -142,8 +160,8 @@ public class ClearBlade {
 		Util.setAppKey(myAppKey);
 		Util.setAppSecret(myAppSecret);
 		masterSecret = null;
-		uri =  "https://ec2-23-23-31-115.compute-1.amazonaws.com:8080";
-		
+		uri =  "https://platform.clearblade.com";
+		messageUrl = "tcp://platform.clearblade.com:1883";
 		logging = false;
 		callTimeOut = 30000;
 	}

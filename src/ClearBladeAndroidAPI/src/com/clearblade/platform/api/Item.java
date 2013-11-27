@@ -69,9 +69,9 @@ public class Item {
 	public Item(String collectionId) {
 		this.json = new JsonObject();
 		this.collectionId = collectionId;
-		long _created = new Date().getTime();
-		this.json.addProperty("_created", _created);
-		this.json.addProperty("_lastModified", _created);
+		//long _created = new Date().getTime();
+		//this.json.addProperty("_created", _created);
+		//this.json.addProperty("_lastModified", _created);
 		this.changes = new JsonObject();
 		this.request = new RequestEngine();
 	}
@@ -102,9 +102,9 @@ public class Item {
 		}
 
 		if(created == null){
-			long _created = new Date().getTime();
-			this.json.addProperty("_created", _created);
-			this.json.addProperty("_lastModified", _created);
+			//long _created = new Date().getTime();
+			//this.json.addProperty("_created", _created);
+			//this.json.addProperty("_lastModified", _created);
 		}
 		this.changes = new JsonObject();
 		this.request = new RequestEngine();
@@ -115,17 +115,17 @@ public class Item {
 		this.collectionId = collectionId;
 		this.json = json;
 		JsonElement itemId = this.json.get("itemId");
-		JsonElement created = this.json.get("_created");
+		//JsonElement created = this.json.get("_created");
 
 		if(itemId == null){
 			this.json.addProperty("itemId", "");
 		}
 
-		if(created == null){
-			long _created = new Date().getTime();
-			this.json.addProperty("_created", _created);
-			this.json.addProperty("_lastModified", _created);
-		}
+		//if(created == null){
+		//	long _created = new Date().getTime();
+		//	this.json.addProperty("_created", _created);
+		//	this.json.addProperty("_lastModified", _created);
+		//}
 		this.changes = new JsonObject();
 		this.request = new RequestEngine();
 	}

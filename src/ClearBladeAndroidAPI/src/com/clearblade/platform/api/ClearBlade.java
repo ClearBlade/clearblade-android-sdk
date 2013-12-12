@@ -161,7 +161,7 @@ public class ClearBlade {
 		Util.setAppSecret(myAppSecret);
 		masterSecret = null;
 		uri =  "https://platform.clearblade.com";
-		messageUrl = "tcp://platform.clearblade.com:1883";
+		messageUrl = "tcp://messaging.clearblade.com:1883";
 		logging = false;
 		callTimeOut = 30000;
 	}

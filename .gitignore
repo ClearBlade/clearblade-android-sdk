@@ -1,5 +1,7 @@
 *.class
 src/ClearBladeAndroidAPI/bin/*
 src/ClearBladeAndroidTest/bin/*
+gen/
+.*.swp
 
 

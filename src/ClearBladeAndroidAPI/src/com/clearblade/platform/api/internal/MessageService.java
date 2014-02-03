@@ -25,6 +25,7 @@ import android.util.Log;
 import com.clearblade.platform.api.Item;
 import com.clearblade.platform.api.MessageCallback;
 import com.clearblade.platform.api.ClearBlade;
+import com.clearblade.platform.api.User;
 
 
 public class MessageService extends Service implements MqttCallback{
@@ -78,8 +79,14 @@ public class MessageService extends Service implements MqttCallback{
 		//sets the clean session option, where is the cheapest place to set this?
 		opts = new MqttConnectOptions();
 		opts.setCleanSession(true);
-		opts.setUserName(Util.getAppKey());
-		opts.setPassword(Util.getAppSecret().toCharArray());
+		User curUser = ClearBlade.getCurrentUser();
+		if(curUser.getAuthToken() == null){
+			opts.setUserName(Util.getAppKey());
+			opts.setPassword(Util.getAppSecret().toCharArray());
+		}else{
+			opts.setUserName(curUser.getAuthToken());
+			opts.setPassword(Util.getAppKey().toCharArray());
+		}
 		String action = intent.getAction();
 
 		Log.i(DEBUG_TAG,"Received action of " + action);

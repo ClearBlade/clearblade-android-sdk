@@ -152,6 +152,7 @@ public class RequestEngine {
 			String method = this.headers.getMethod();
 			String charset = "UTF-8";
 			URL url = new URL(this.headers.getUri());
+			
 			if (isSSL()){
 				urlConnection = (HttpsURLConnection) url.openConnection();
 				
@@ -159,10 +160,27 @@ public class RequestEngine {
 				urlConnection = (HttpURLConnection) url.openConnection();
 				
 			}
+			
 			urlConnection.setRequestMethod(method);
 			urlConnection.setConnectTimeout(this.headers.getTimeout());
-			urlConnection.setRequestProperty("CLEARBLADE-APPKEY", Util.getAppKey());
-			urlConnection.setRequestProperty("CLEARBLADE-APPSECRET", Util.getAppSecret());
+
+			//things get iffy here. most requests should just need usertoken, but you need key/secret
+			// to get token on first request. also both token and key/secret are needed for logout and auth check requests.
+			// so if the url cotains the logout or check endpoints, we add all 3, otherwise we add token or if that is null,
+			// just add key/secret
+			boolean isLogout = this.headers.getUri().toLowerCase().contains("api/user/logout");
+			boolean isAuthCheck = this.headers.getUri().toLowerCase().contains("api/user/check");
+			String userToken = ClearBlade.getCurrentUser().getAuthToken();
+			if(isLogout || isAuthCheck){
+				urlConnection.setRequestProperty("CLEARBLADE-APPKEY", Util.getAppKey());
+				urlConnection.setRequestProperty("CLEARBLADE-APPSECRET", Util.getAppSecret());
+				urlConnection.setRequestProperty("ClearBlade-UserToken", userToken);
+			}else if(userToken != null){
+				urlConnection.setRequestProperty("ClearBlade-UserToken", userToken);
+			}else{
+				urlConnection.setRequestProperty("CLEARBLADE-APPKEY", Util.getAppKey());
+				urlConnection.setRequestProperty("CLEARBLADE-APPSECRET", Util.getAppSecret());
+			}
 
 			urlConnection.setRequestProperty("Accept", "application/json");
 			urlConnection.setRequestProperty("Accept-Charset", charset);
@@ -185,16 +203,19 @@ public class RequestEngine {
 			responseCode = urlConnection.getResponseCode();
 			responseMessage = urlConnection.getResponseMessage();
 
-			InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-			String json = readStream(in);
+			
 			if(responseCode / 100 == 2) {  // If the response code is within 200 range success
+				InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+				String json = readStream(in);
 				result = new PlatformResponse<String>(err, json);
 				Util.logger(TAG,method + " "+ responseCode + ":" + responseMessage, false);
 
 			} else {	// else an Error Occurred 
 
 				err = true;
-				Util.logger(TAG,responseCode + ":" +responseMessage + "\nServer:" + json, true);
+				String errResp = responseCode + ":" + responseMessage;
+				Util.logger(TAG,errResp, true);
+				result = new PlatformResponse<String>(err,errResp);
 
 			}
 		}catch(Exception e) {
@@ -212,6 +233,7 @@ public class RequestEngine {
 				caught = "Exception: ";
 			}
 			err = true;
+			e.printStackTrace();
 			result = new PlatformResponse<String>(err,"RequestEngine Caught " + caught + e.getMessage());
 		}
 		finally {

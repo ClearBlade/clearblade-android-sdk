@@ -116,15 +116,15 @@ public class MessageService extends Service implements MqttCallback{
 		messageReceiver = new MessageReceiver();
 		messageReceiver.addSubscribeCallback(new MessageCallback(){
 			@Override
-			public void done(String topic, String message) {
-				subscribe(topic);
+			public void done(String topic, String message, int qos) {
+				subscribe(topic, qos);
 			}	
 		});
 		
 		messageReceiver.addPublishCallback(new MessageCallback(){
 			@Override
-			public void done(String topic, String message) {
-				publish(topic,message);
+			public void done(String topic, String message, int qos) {
+				publish(topic,message, qos);
 			}	
 		});
 		
@@ -244,9 +244,9 @@ public class MessageService extends Service implements MqttCallback{
 		sendBroadcast(intent);
 	}
 
-	public void publish(String topic, byte[] payload){
+	public void publish(String topic, byte[] payload, int qos){
 		try {
-			mqttClient.publish(topic, payload, 0, false);
+			mqttClient.publish(topic, payload, qos, false);
 		} catch (MqttPersistenceException e) {
 			e.printStackTrace();
 		} catch (MqttException e) {
@@ -254,17 +254,17 @@ public class MessageService extends Service implements MqttCallback{
 		}
 	}
 	
-	public void publish(String topic, String payload){
-		publish(topic, payload.getBytes());
+	public void publish(String topic, String payload, int qos){
+		publish(topic, payload.getBytes(), qos);
 	}
 	
-	public void publish(String topic, Item payload){
-		publish(topic, payload.toString());
+	public void publish(String topic, Item payload, int qos){
+		publish(topic, payload.toString(), qos);
 	}
 
-	public void subscribe(String topic){
+	public void subscribe(String topic, int qos){
 		try {
-			mqttClient.subscribe(topic, 0);
+			mqttClient.subscribe(topic, qos);
 		} catch (MqttException e) {
 			e.printStackTrace();
 		}

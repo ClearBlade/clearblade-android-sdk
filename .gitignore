@@ -3,5 +3,5 @@ src/ClearBladeAndroidAPI/bin/*
 src/ClearBladeAndroidTest/bin/*
 gen/
 .*.swp
-
+local.properties
 

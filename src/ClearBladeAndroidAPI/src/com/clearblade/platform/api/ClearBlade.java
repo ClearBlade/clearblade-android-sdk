@@ -208,13 +208,14 @@ public class ClearBlade {
 	 * Upon Success/Failure, appropriate callback methods are triggered
 	 * Must be called prior to any API calls.
 	 * Available init options:
-	 * 	email - String to register or log-in as specific user (required if password is given) Default - null
-	 * 	password - password String for given user (required if email is given) Default - null
-	 * 	platformURL - Custom URL for the platform Default - https://platform.clearblade.com
-	 * 	messagingURL - Custom Messaging URL Default - tcp://messaging.clearblade.com:1883
-	 * 	registerUser - Boolean to tell if you'd like to attempt registering the given user Default - false
-	 * 	logging - Boolean to enable ClearBlade Internal API logging Default - false
-	 * 	callTimeout - Int number of milliseconds for call timeouts Default - 30000 (30 seconds)
+	 * 	email - String to register or log-in as specific user (required if password is given) Default - null<br>
+	 * 	password - password String for given user (required if email is given) Default - null<br>
+	 * 	platformURL - Custom URL for the platform Default - https://platform.clearblade.com<br>
+	 * 	messagingURL - Custom Messaging URL Default - tcp://messaging.clearblade.com:1883<br>
+	 * 	registerUser - Boolean to tell if you'd like to attempt registering the given user Default - false<br>
+	 * 	logging - Boolean to enable ClearBlade Internal API logging Default - false<br>
+	 * 	callTimeout - Int number of milliseconds for call timeouts Default - 30000 (30 seconds)<br>
+	 *  allowUntrusted - Boolean to connect to a platform server without a signed SSL certificate Default - false
 	 * Throws IllegalArgumentException if systemKey or systemSecret is null 
 	 * @param systemKey The key used to identify the System in use
 	 * @param systemSecret The secret used to verify the System in use

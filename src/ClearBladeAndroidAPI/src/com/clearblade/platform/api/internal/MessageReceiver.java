@@ -50,10 +50,12 @@ import com.clearblade.platform.api.MessageCallback;
 		 }else if (action.equals(MessageService.MESSAGE_ACTION_PUBLISH)){
 			 String topic = intent.getStringExtra("topic");
 			 String message = intent.getStringExtra("message");
-			 publishCallback.done(topic, message);
+			 int qos = intent.getIntExtra("qos", 1);
+			 publishCallback.done(topic, message, qos);
 		 }else if (action.equals(MessageService.MESSAGE_ACTION_SUBSCRIBE)){
 			 String topic = intent.getStringExtra("topic");
-			 subscribeCallback.done(topic, "");
+			 int qos = intent.getIntExtra("qos", 1);
+			 subscribeCallback.done(topic, "", qos);
 		 }else if (action.equals(MessageService.MESSAGE_ACTION_UNSUBSCRIBE)){
 			 
 		 }else if (action.equals(MessageService.MESSAGE_ACTION_DISCONNECT)){

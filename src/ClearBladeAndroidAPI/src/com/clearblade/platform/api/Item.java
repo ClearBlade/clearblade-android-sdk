@@ -173,6 +173,8 @@ public class Item {
 			return toObject.getAsJsonObject();
 		}catch(JsonSyntaxException mfe){
 			return null;
+		}catch(IllegalStateException ise){
+			return null;
 		}
 	}
 

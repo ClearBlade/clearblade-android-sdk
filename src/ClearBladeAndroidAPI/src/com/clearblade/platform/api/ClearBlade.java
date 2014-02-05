@@ -15,10 +15,10 @@ import com.clearblade.platform.api.internal.Util;
  *  <li>Provide SDK and API information</li>
  *  <li>Initialize the ClearBlade Library for use</li>
  * </ul>
- * <strong>*You must call initialize(String appKey, String appSecret) or its other variants to initialize the API*</strong>
+ * <strong>*You must call initialize(String systemKey, String systemSecret) or its other variants to initialize the API*</strong>
  * </p>
  *
- * @author  Clyde Byrd III, Aaron Allsbrook
+ * @author  Clyde Byrd III, Aaron Allsbrook, Michael Sprague
  * @since   1.0
  */
 public class ClearBlade {
@@ -145,62 +145,35 @@ public class ClearBlade {
 	}
 	
 	/**
-	 * Initializes the API for use for the Application that is specified by the given credentials.
+	 * Initializes the API for the given system as an anonymous user. (If the system
+	 * has user authentication required set to true, this will fail - See the initialize
+	 * method mentioned below)
 	 * Must be called prior to any API calls
 	 * Throws IllegalArgumentException if myAppKey or myAppSecret is null 
 	 * @param myAppKey The key used to identify the Application in use
 	 * @param myAppSecret The secret used to verify the Application in use
 	 * throws IllegalArgumentException
 	 */
-	public static void initialize(String myAppKey, String myAppSecret) {
+	public static void initialize(String systemKey, String systemSecret, InitCallback callback) {
 
-		if (myAppKey == null) {
-			throw new IllegalArgumentException("appKey must be a non-empty Strings");
+		if (systemKey == null) {
+			throw new IllegalArgumentException("systemKey must be a non-empty Strings");
 		}
-		if(myAppSecret == null) {
-			throw new IllegalArgumentException("appSecret can not be null");
+		if(systemSecret == null) {
+			throw new IllegalArgumentException("systemSecret can not be null");
 		}
 
-		Util.setAppKey(myAppKey);
-		Util.setAppSecret(myAppSecret);
+		Util.setAppKey(systemKey);
+		Util.setAppSecret(systemSecret);
 		masterSecret = null;
 		uri =  "https://platform.clearblade.com";
 		messageUrl = "tcp://messaging.clearblade.com:1883";
 		logging = false;
 		callTimeOut = 30000;
-	}
-
-	/**
-	 * Initializes the API for use for the Application that is specified by the given credentials.
-	 * Must be called prior to any API calls.
-	 * Throws IllegalArgumentException if myAppKey or myAppSecret is null 
-	 * @param myAppKey The key used to identify the Application in use
-	 * @param myAppSecret The secret used to verify the Application in use
-	 * @param platformUrl The url that the API will use to make Calls
-	 * @throws IllegalArgumentException
-	 */
-	public static void initialize(String myAppKey, String myAppSecret, String platformUrl) {
-
 		
-
-		if (myAppKey == null) {
-			throw new IllegalArgumentException("appKey must be a non-empty Strings");
-		}
+		user = new User(null);
 		
-		if(myAppSecret == null) {
-			throw new IllegalArgumentException("appSecret can not be null");
-		}
-		
-		if(platformUrl == null) {
-			throw new IllegalArgumentException("platformUrl can not be null");
-		}
-
-		Util.setAppKey(myAppKey);
-		Util.setAppSecret(myAppSecret);
-		masterSecret = null;
-		uri =  platformUrl;
-		logging = false;
-		callTimeOut = 30000;
+		user.authWithAnonUser(callback);
 	}
 	
 	/**

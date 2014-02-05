@@ -4,4 +4,4 @@ src/ClearBladeAndroidTest/bin/*
 gen/
 .*.swp
 local.properties
-
+.classpath

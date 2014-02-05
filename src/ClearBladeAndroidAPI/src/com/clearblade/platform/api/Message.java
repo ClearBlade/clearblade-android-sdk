@@ -21,7 +21,7 @@ public class Message {
 	    intent.setAction(MessageService.MESSAGE_ACTION_START);
 	    //intent.putExtra("topic", topic);
 	    context.startService(intent);
-	    qualityOfService = 1;
+	    qualityOfService = 0;
 	    
 	}
 	

@@ -1,4 +1,4 @@
-package com.platform.test;
+package com.clearblade.platform.test;
 
 import junit.framework.TestCase;
 

@@ -1,4 +1,4 @@
-package com.clearblade.platform.api.test;
+package com.clearblade.platform.test;
 
 import android.test.AndroidTestCase;
 import java.util.concurrent.CountDownLatch;
@@ -8,6 +8,7 @@ public class AsyncAndroidTestCase extends AndroidTestCase {
     private final Semaphore asyncSemaphore = new Semaphore(0);
 
     public void waitForAsync() {
+    	fail("force fail");
 	try {
 	    asyncSemaphore.acquire();
 	} catch (InterruptedException e) {
@@ -16,5 +17,6 @@ public class AsyncAndroidTestCase extends AndroidTestCase {
     }
     public void notifyAsyncComplete() {
 	asyncSemaphore.release();
+	
     }
 }

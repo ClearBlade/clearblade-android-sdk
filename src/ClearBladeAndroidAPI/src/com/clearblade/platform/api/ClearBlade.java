@@ -156,6 +156,10 @@ public class ClearBlade {
 	 */
 	public static void initialize(String systemKey, String systemSecret, InitCallback callback) {
 
+		if(user != null){
+			user = null;
+		}
+		
 		if (systemKey == null) {
 			throw new IllegalArgumentException("systemKey must be a non-empty Strings");
 		}
@@ -197,7 +201,7 @@ public class ClearBlade {
 	 * @throws IllegalArgumentException
 	 */
 	public static void initialize(String systemKey, String systemSecret, HashMap<String,Object> initOptions, InitCallback callback){
-		
+				
 		if (systemKey == null) {
 			throw new IllegalArgumentException("systemKey must be a non-empty Strings");
 		}
@@ -243,12 +247,15 @@ public class ClearBlade {
 		}
 		
 		//init registerUser
-		Boolean registerUser = (Boolean) initOptions.get("registerUser") != null;
+		Boolean registerUser = (Boolean) initOptions.get("registerUser");
+		if(registerUser == null){
+			registerUser = false;
+		}
 	
 		//init untrusted
 		Boolean allowUntrusted = (Boolean) initOptions.get("allowUntrusted");
 		if(allowUntrusted != null){
-			setAllowUntrusted(allowUntrusted);
+			setAllowUntrusted(allowUntrusted.booleanValue());
 		}
 		
 		String email = (String) initOptions.get("email");
@@ -256,11 +263,11 @@ public class ClearBlade {
 		
 		user = new User(email);
 		
-		if(!initError && email != null && !registerUser){
+		if(!initError && email != null && !registerUser.booleanValue()){
 			//no init error, an email was given, and don't register user
 			//just auth with given user info
 			user.authWithCurrentUser(password, callback);
-		}else if(!initError && registerUser){
+		}else if(!initError && registerUser.booleanValue()){
 			//no errors, and register new user
 			user.registerUser(password, callback);
 		}else if(!initError && email == null){
@@ -315,17 +322,18 @@ public class ClearBlade {
 	
 	private static void validateOptions(HashMap<String, Object> options,
 			InitCallback callback) {
+		initError = false;
 		
 		String email = (String) options.get("email");
 		String password = (String) options.get("password");
-		boolean shouldRegister = (Boolean) options.get("registerUser") != null;
+		Boolean shouldRegister = (Boolean) options.get("registerUser");
 		if(email == null && password != null){
 			initError = true;
 			callback.error(new ClearBladeException("Must provide both an email and password to authenticate. You only provided a password"));
 		}else if(email != null && password == null){
 			initError = true;
 			callback.error(new ClearBladeException("Must provide both an email and password to authenticate. You only provided an email"));
-		}else if(shouldRegister && email == null){
+		}else if(shouldRegister != null && shouldRegister.booleanValue() && email == null){
 			initError = true;
 			callback.error(new ClearBladeException("Cannot register anonymous user"));
 		}

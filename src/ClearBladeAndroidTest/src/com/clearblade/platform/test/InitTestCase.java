@@ -17,8 +17,7 @@ public class InitTestCase extends AndroidTestCase {
 	private static String systemKey = "c2c895af0af087bea2e1f2a4fb0b";
 	private static String systemSecret = "C2C895AF0A98FAE0CEF2A4AF890B";
 	
-	//temp removed until this fix is pushed to prod
-	/*
+	
 	public void testAnonymousInitWithAuthRequired() throws Throwable{
 	
 		//make sure auth token isn't lingering from other init tests
@@ -46,7 +45,7 @@ public class InitTestCase extends AndroidTestCase {
 		signal.await();
 
 	}
-	*/
+	
 	
 	public void testUserInitWithAuthRequired() throws Throwable{
 		

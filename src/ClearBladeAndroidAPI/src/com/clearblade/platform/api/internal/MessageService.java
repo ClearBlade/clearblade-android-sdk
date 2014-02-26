@@ -81,11 +81,11 @@ public class MessageService extends Service implements MqttCallback{
 		opts.setCleanSession(true);
 		User curUser = ClearBlade.getCurrentUser();
 		if(curUser.getAuthToken() == null){
-			opts.setUserName(Util.getAppKey());
-			opts.setPassword(Util.getAppSecret().toCharArray());
+			opts.setUserName(Util.getSystemKey());
+			opts.setPassword(Util.getSystemSecret().toCharArray());
 		}else{
 			opts.setUserName(curUser.getAuthToken());
-			opts.setPassword(Util.getAppKey().toCharArray());
+			opts.setPassword(Util.getSystemKey().toCharArray());
 		}
 		String action = intent.getAction();
 

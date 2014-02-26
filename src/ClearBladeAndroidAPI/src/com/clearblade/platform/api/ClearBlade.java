@@ -167,8 +167,8 @@ public class ClearBlade {
 			throw new IllegalArgumentException("systemSecret can not be null");
 		}
 
-		Util.setAppKey(systemKey);
-		Util.setAppSecret(systemSecret);
+		Util.setSystemKey(systemKey);
+		Util.setSystemSecret(systemSecret);
 		masterSecret = null;
 		uri =  "https://platform.clearblade.com";
 		messageUrl = "tcp://messaging.clearblade.com:1883";
@@ -213,8 +213,8 @@ public class ClearBlade {
 		//validate options
 		validateOptions(initOptions, callback);
 		
-		Util.setAppKey(systemKey);
-		Util.setAppSecret(systemSecret);
+		Util.setSystemKey(systemKey);
+		Util.setSystemSecret(systemSecret);
 		
 		//init platform url
 		String platURL = (String) initOptions.get("platformURL");

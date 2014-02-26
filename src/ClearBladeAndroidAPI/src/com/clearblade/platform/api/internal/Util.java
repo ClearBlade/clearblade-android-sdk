@@ -6,16 +6,16 @@ import com.clearblade.platform.api.ClearBlade;
 
 public class Util {
 	
-	private static String appKey;							// app Id
-	private static String appSecret;						// app Password
+	private static String systemKey;							// system Id
+	private static String systemSecret;						// system Password
 	
 
-	public static void setAppKey(String appKey) {
-		Util.appKey = appKey;
+	public static void setSystemKey(String systemKey) {
+		Util.systemKey = systemKey;
 	}
 
-	public static void setAppSecret(String appSecret) {
-		Util.appSecret = appSecret;
+	public static void setSystemSecret(String systemSecret) {
+		Util.systemSecret = systemSecret;
 	}
 
 	
@@ -36,11 +36,11 @@ public class Util {
 		}
 	}
 	
-	protected static String getAppKey() {
-		return appKey;
+	protected static String getSystemKey() {
+		return systemKey;
 	}
 
-	protected static String getAppSecret() {
-		return appSecret;
+	protected static String getSystemSecret() {
+		return systemSecret;
 	}
 }

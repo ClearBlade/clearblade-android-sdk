@@ -172,14 +172,14 @@ public class RequestEngine {
 			boolean isAuthCheck = this.headers.getUri().toLowerCase().contains("api/user/check");
 			String userToken = ClearBlade.getCurrentUser().getAuthToken();
 			if(isLogout || isAuthCheck){
-				urlConnection.setRequestProperty("CLEARBLADE-APPKEY", Util.getAppKey());
-				urlConnection.setRequestProperty("CLEARBLADE-APPSECRET", Util.getAppSecret());
+				urlConnection.setRequestProperty("CLEARBLADE-SYSTEMKEY", Util.getSystemKey());
+				urlConnection.setRequestProperty("CLEARBLADE-SYSTEMSECRET", Util.getSystemSecret());
 				urlConnection.setRequestProperty("ClearBlade-UserToken", userToken);
 			}else if(userToken != null){
 				urlConnection.setRequestProperty("ClearBlade-UserToken", userToken);
 			}else{
-				urlConnection.setRequestProperty("CLEARBLADE-APPKEY", Util.getAppKey());
-				urlConnection.setRequestProperty("CLEARBLADE-APPSECRET", Util.getAppSecret());
+				urlConnection.setRequestProperty("CLEARBLADE-SYSTEMKEY", Util.getSystemKey());
+				urlConnection.setRequestProperty("CLEARBLADE-SYSTEMSECRET", Util.getSystemSecret());
 			}
 
 			urlConnection.setRequestProperty("Accept", "application/json");

@@ -95,8 +95,6 @@ public class InitTestCase extends AndroidTestCase {
 		
 		String email = "test_" + randomNum.toString() + "@test.com";
 		
-		System.out.println();
-		
 		initOptions.put("email", email);
 		initOptions.put("password", "android_test");
 		initOptions.put("registerUser", true);

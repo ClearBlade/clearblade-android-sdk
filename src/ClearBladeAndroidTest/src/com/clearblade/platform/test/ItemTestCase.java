@@ -19,6 +19,8 @@ public class ItemTestCase extends AndroidTestCase {
 	private static String systemSecret = "C2C895AF0A98FAE0CEF2A4AF890B";
 	
 	private static String testCollectionID = "d6ca95af0ad8c7cabfedfcc895b001";
+	
+	private static String testItemID = "c40e7f31-9f0b11e3-9306-bc764e0487f9";
 
 	private void initClearBladeSDK() throws Throwable{
 		
@@ -64,7 +66,7 @@ public class ItemTestCase extends AndroidTestCase {
 		Item tempItem = new Item(testCollectionID);
 		
 		tempItem.set("intcolumn", randomNum);
-		tempItem.set("stringcolumn", "testing");
+		tempItem.set("stringcolumn", "should be deleted..");
 		
 		tempItem.save(new DataCallback(){
 			@Override
@@ -94,6 +96,32 @@ public class ItemTestCase extends AndroidTestCase {
 		
 		signal.await();
 		
+	}
+	
+	public void testGetItem() throws Throwable{
+		
+		initClearBladeSDK();
+		
+		final CountDownLatch signal = new CountDownLatch(1);
+		
+		Item tempItem = new Item(testCollectionID);
+		
+		tempItem.load(testItemID, new DataCallback(){
+			@Override
+			public void done(Item[] item){
+				assertEquals(1, item.length);
+				assertEquals("test_data", item[0].getString("stringcolumn"));
+				assertEquals(123, item[0].getInt("intcolumn"));
+				signal.countDown();
+			}
+			@Override
+			public void error(ClearBladeException e){
+				fail("Unable to get item from collection: " + e.getMessage());
+				signal.countDown();
+			}
+		});
+		
+		signal.await();
 	}
 	
 	

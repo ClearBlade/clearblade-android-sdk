@@ -211,12 +211,13 @@ public class RequestEngine {
 				Util.logger(TAG,method + " "+ responseCode + ":" + responseMessage, false);
 
 			} else {	// else an Error Occurred 
-
-				err = true;
-				String errResp = responseCode + ":" + responseMessage;
+				String errMessage;
+				InputStream in = new BufferedInputStream(urlConnection.getErrorStream());
+				errMessage = readStream(in);
+				String errResp = responseCode + ":" + responseMessage + ":" + errMessage;
 				Util.logger(TAG,errResp, true);
+				err = true;
 				result = new PlatformResponse<String>(err,errResp);
-
 			}
 		}catch(Exception e) {
 

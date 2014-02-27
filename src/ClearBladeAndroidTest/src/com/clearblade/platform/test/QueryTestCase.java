@@ -53,7 +53,7 @@ public class QueryTestCase extends AndroidTestCase {
 		
 	}
 	
-	public void testQueryEqualTo() throws Throwable{
+	public void testQueryEqualToString() throws Throwable{
 		
 		initClearBladeSDK();
 		
@@ -61,8 +61,6 @@ public class QueryTestCase extends AndroidTestCase {
 		
 		Query testQuery = new Query(queryCollectionID);
 		testQuery.equalTo("firstname", "Michael");
-		// TODO: uncomment below line once defect 20216 is resolved
-		//testQuery.equalTo("age", "22");
 		testQuery.fetch(new DataCallback(){
 			@Override
 			public void done(Item[] items) {
@@ -81,7 +79,33 @@ public class QueryTestCase extends AndroidTestCase {
 		signal.await();
 	}
 	
-	public void testQueryNotEqualTo() throws Throwable{
+	public void testQueryEqualToInt() throws Throwable{
+		
+		initClearBladeSDK();
+		
+		final CountDownLatch signal = new CountDownLatch(1);
+		
+		Query testQuery = new Query(queryCollectionID);
+		testQuery.equalTo("age", 22);
+		testQuery.fetch(new DataCallback(){
+			@Override
+			public void done(Item[] items) {
+				assertEquals(1, items.length);
+				assertEquals("Michael", items[0].getString("firstname"));
+				assertEquals(22, items[0].getInt("age"));
+				signal.countDown();
+			}
+			@Override
+			public void error(ClearBladeException e){
+				fail("Failed to query item: " + e.getMessage());
+				signal.countDown();
+			}
+		});
+		
+		signal.await();
+	}
+	
+	public void testQueryNotEqualToString() throws Throwable{
 		
 		initClearBladeSDK();
 		
@@ -105,9 +129,31 @@ public class QueryTestCase extends AndroidTestCase {
 		signal.await();
 	}
 	
-	public void testQueryGreaterThan() throws Throwable{
+	public void testQueryNotEqualToInt() throws Throwable{
 		
-		// TODO: Change greater than field check to int field once defect 20216 is resolved
+		initClearBladeSDK();
+		
+		final CountDownLatch signal = new CountDownLatch(1);
+		
+		Query testQuery = new Query(queryCollectionID);
+		testQuery.notEqual("age", 22);
+		testQuery.fetch(new DataCallback(){
+			@Override
+			public void done(Item[] items){
+				assertEquals(5, items.length);
+				signal.countDown();
+			}
+			@Override
+			public void error(ClearBladeException e){
+				fail("Failed to query item: " + e.getMessage());
+				signal.countDown();
+			}
+		});
+		
+		signal.await();
+	}
+	
+	public void testQueryGreaterThanString() throws Throwable{
 		
 		initClearBladeSDK();
 		
@@ -133,9 +179,33 @@ public class QueryTestCase extends AndroidTestCase {
 		signal.await();
 	}
 	
-	public void testQueryGreaterThanEqualTo() throws Throwable{
+	public void testQueryGreaterThanInt() throws Throwable{
 		
-		// TODO: Change greater than equal to field check to int field once defect 20216 is resolved
+		initClearBladeSDK();
+		
+		final CountDownLatch signal = new CountDownLatch(1);
+		
+		Query testQuery = new Query(queryCollectionID);
+		testQuery.greaterThan("age", 40);
+		testQuery.fetch(new DataCallback(){
+			@Override
+			public void done(Item[] items){
+				assertEquals(1, items.length);
+				assertEquals("Eric", items[0].getString("firstname"));
+				assertEquals(45, items[0].getInt("age"));
+				signal.countDown();
+			}
+			@Override
+			public void error(ClearBladeException e){
+				fail("Failed to query item: " + e.getMessage());
+				signal.countDown();
+			}
+		});
+		
+		signal.await();
+	}
+	
+	public void testQueryGreaterThanEqualToString() throws Throwable{
 		
 		initClearBladeSDK();
 		
@@ -161,9 +231,33 @@ public class QueryTestCase extends AndroidTestCase {
 		signal.await();
 	}
 	
-	public void testQueryLessThan() throws Throwable{
+	public void testQueryGreaterThanEqualToInt() throws Throwable{
 		
-		// TODO: Change less than field check to int field once defect 20216 is resolved
+		initClearBladeSDK();
+		
+		final CountDownLatch signal = new CountDownLatch(1);
+		
+		Query testQuery = new Query(queryCollectionID);
+		testQuery.greaterThanEqualTo("age", 45);
+		testQuery.fetch(new DataCallback(){
+			@Override
+			public void done(Item[] items){
+				assertEquals(1, items.length);
+				assertEquals("Eric", items[0].getString("firstname"));
+				assertEquals(45, items[0].getInt("age"));
+				signal.countDown();
+			}
+			@Override
+			public void error(ClearBladeException e){
+				fail("Failed to query item: " + e.getMessage());
+				signal.countDown();
+			}
+		});
+		
+		signal.await();
+	}
+	
+	public void testQueryLessThanString() throws Throwable{
 		
 		initClearBladeSDK();
 		
@@ -189,9 +283,33 @@ public class QueryTestCase extends AndroidTestCase {
 		signal.await();
 	}
 	
-	public void testQueryLessThanEqualTo() throws Throwable{
+	public void testQueryLessThanInt() throws Throwable{
 		
-		// TODO: Change less than equal to field check to int field once defect 20216 is resolved
+		initClearBladeSDK();
+		
+		final CountDownLatch signal = new CountDownLatch(1);
+		
+		Query testQuery = new Query(queryCollectionID);
+		testQuery.lessThan("age", 20);
+		testQuery.fetch(new DataCallback(){
+			@Override
+			public void done(Item[] items){
+				assertEquals(1, items.length);
+				assertEquals("Brian", items[0].getString("firstname"));
+				assertEquals(18, items[0].getInt("age"));
+				signal.countDown();
+			}
+			@Override
+			public void error(ClearBladeException e){
+				fail("Failed to query item: " + e.getMessage());
+				signal.countDown();
+			}
+		});
+		
+		signal.await();
+	}
+	
+	public void testQueryLessThanEqualToString() throws Throwable{
 		
 		initClearBladeSDK();
 		
@@ -218,24 +336,50 @@ public class QueryTestCase extends AndroidTestCase {
 		
 	}
 	
-	public void testQueryUpdate() throws Throwable{
-		// TODO: uncomment full test once defect 20216 is resolved
-		/*
+	public void testQueryLessThanEqualToInt() throws Throwable{
+		
 		initClearBladeSDK();
 		
 		final CountDownLatch signal = new CountDownLatch(1);
 		
-		Random rand = new Random();
-		final Integer randomNum = rand.nextInt(100);
+		Query testQuery = new Query(queryCollectionID);
+		testQuery.lessThanEqualTo("age", 18);
+		testQuery.fetch(new DataCallback(){
+			@Override
+			public void done(Item[] items){
+				assertEquals(1, items.length);
+				assertEquals("Brian", items[0].getString("firstname"));
+				assertEquals(18, items[0].getInt("age"));
+				signal.countDown();
+			}
+			@Override
+			public void error(ClearBladeException e){
+				fail("Failed to query item: " + e.getMessage());
+				signal.countDown();
+			}
+		});
+		
+		signal.await();
+		
+	}
+	
+	public void testQueryUpdate() throws Throwable{
+
+		initClearBladeSDK();
+		
+		final CountDownLatch signal = new CountDownLatch(1);
+		
+		//create random int between 21 and 39 so that other tests aren't affected
+		final Integer randomNum = 21 + (int)(Math.random() * ((39 - 21) + 1));
 		
 		Query testQuery = new Query(queryCollectionID);
-		testQuery.equalTo("firstname", "Eric");
-		testQuery.addChange("age", randomNum.toString());
+		testQuery.equalTo("firstname", "Alex");
+		testQuery.addChange("age", randomNum);
 		testQuery.update( new DataCallback() {
 			@Override
 			public void done(Item[] items){
 				assertEquals(1, items.length);
-				assertEquals("Eric", items[0].getString("firstname"));
+				assertEquals("Alex", items[0].getString("firstname"));
 				assertEquals((int)randomNum, items[0].getInt("age"));
 				signal.countDown();
 			}
@@ -247,7 +391,7 @@ public class QueryTestCase extends AndroidTestCase {
 		});
 		
 		signal.await();
-		 */
+		
 	}
 	
 	public void testQueryRemove() throws Throwable{

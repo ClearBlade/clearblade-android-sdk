@@ -3,7 +3,9 @@ package com.clearblade.platform.api;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import com.clearblade.platform.api.internal.DataTask;
 import com.clearblade.platform.api.internal.PlatformCallback;
@@ -92,7 +94,7 @@ public class Query {
 	 * @param value - the value of the search criteria
 	 * @return modified Query object for chaining purposes.
 	 */
-	public Query equalTo(String field, String value) {
+	public Query equalTo(String field, Object value) {
 		FieldValue fv = new FieldValue(field, value);
 		if (queryObj.EQ==null){
 			queryObj.EQ = new ArrayList<FieldValue>();
@@ -117,7 +119,7 @@ public class Query {
 	 * @param value - the value of the search criteria
 	 * @return modified Query object for chaining purposes.
 	 */
-	public Query notEqual(String field, String value) {
+	public Query notEqual(String field, Object value) {
 		FieldValue fv = new FieldValue(field, value);
 		if (queryObj.NEQ==null){
 			queryObj.NEQ = new ArrayList<FieldValue>();
@@ -141,7 +143,7 @@ public class Query {
 	 * @param value - the value of the search criteria
 	 * @return modified Query object for chaining purposes.
 	 */
-	public Query greaterThan(String field, String value) {
+	public Query greaterThan(String field, Object value) {
 		FieldValue fv = new FieldValue(field, value);
 		if (queryObj.GT==null){
 			queryObj.GT = new ArrayList<FieldValue>();
@@ -165,7 +167,7 @@ public class Query {
 	 * @param value - the value of the search criteria
 	 * @return modified Query object for chaining purposes.
 	 */
-	public Query greaterThanEqualTo(String field, String value){
+	public Query greaterThanEqualTo(String field, Object value){
 		FieldValue fv = new FieldValue(field, value);
 		if (queryObj.GTE==null){
 			queryObj.GTE = new ArrayList<FieldValue>();
@@ -189,7 +191,7 @@ public class Query {
 	 * @param value - the value of the search criteria
 	 * @return modified Query object for chaining purposes.
 	 */
-	public Query lessThan(String field, String value) {
+	public Query lessThan(String field, Object value) {
 		FieldValue fv = new FieldValue(field, value);
 		if (queryObj.LT==null){
 			queryObj.LT = new ArrayList<FieldValue>();
@@ -213,7 +215,7 @@ public class Query {
 	 * @param value - the value of the search criteria
 	 * @return modified Query object for chaining purposes.
 	 */
-	public Query lessThanEqualTo(String field, String value){
+	public Query lessThanEqualTo(String field, Object value){
 		FieldValue fv = new FieldValue(field, value);
 		if (queryObj.LTE==null){
 			queryObj.LTE = new ArrayList<FieldValue>();
@@ -417,7 +419,12 @@ public class Query {
 		Iterator<FieldValue> iter = params.iterator();
 		while(iter.hasNext()){
 			FieldValue fv = (FieldValue) iter.next();
-			ret = ret + "{\""+fv.field+"\":\""+fv.value+"\"}";
+			Class valueClass = fv.value.getClass();
+			if(valueClass.getName().toLowerCase().equalsIgnoreCase("java.lang.string")){
+				ret = ret + "{\""+fv.field+"\":\""+fv.value+"\"}";
+			}else if(valueClass.getName().toLowerCase().equalsIgnoreCase("java.lang.integer")){
+				ret = ret + "{\""+fv.field+"\":"+Integer.toString((Integer) fv.value)+"}";
+			}
 			if (iter.hasNext()){
 				ret=ret+",";
 			}
@@ -426,7 +433,7 @@ public class Query {
 		return ret;
 	}
 	
-	private JsonObject changes = new JsonObject();
+	private HashMap<String,Object> changes = new HashMap<String,Object>();
 	
 	/**
 	 * Adds a change set to the query.  When update is run all of the changes
@@ -434,8 +441,8 @@ public class Query {
 	 * @param name - the name of the column to be modified
 	 * @param value - the new value to insert into the column
 	 */
-	public void addChange(String name, String value){
-		changes.addProperty(name, value);
+	public void addChange(String name, Object value){
+		changes.put(name, value);
 	}
 	
 	/**
@@ -443,7 +450,7 @@ public class Query {
 	 * is executed.
 	 */
 	public void clearChanges(){
-		changes = new JsonObject();
+		changes = new HashMap<String, Object>();
 	}
 	
 	/**
@@ -483,7 +490,7 @@ public class Query {
 			
 		});
 		asyncFetch.execute(request);
-		changes = new JsonObject();
+		changes = new HashMap<String,Object>();
 	}
 	
 	public Item[] updateSync() throws ClearBladeException{
@@ -500,12 +507,36 @@ public class Query {
 	
 	private void updateSetup(){
 		JsonObject payload = new JsonObject();
-		payload.addProperty("$set", this.changes.toString());
+		payload.addProperty("$set", changeSetMapAsJsonString());
 		//JsonObject query = new JsonObject();
 		JsonElement toObject = new JsonParser().parse(queryAsJsonString());
 		payload.add("query", toObject);
 		RequestProperties headers = new RequestProperties.Builder().method("PUT").endPoint("api/" + collectionId).body(payload).build();
 		request.setHeaders(headers);
+	}
+	
+	private String changeSetMapAsJsonString(){
+		
+		String jsonString = "{";
+		
+		for (Map.Entry<String, Object> entry : changes.entrySet()) {
+		    String key = entry.getKey();
+		    Object value = entry.getValue();
+		    if(value.getClass().getName().equalsIgnoreCase("java.lang.string")){
+		    	jsonString += "\"" + key + "\":" + "\"" + value + "\"";
+		    }else if(value.getClass().getName().equalsIgnoreCase("java.lang.integer")){
+		    	jsonString += "\"" + key + "\":" + value.toString();
+		    }
+		    jsonString += ",";
+		}
+		
+		//remove trailing comma
+		jsonString = jsonString.substring(0, jsonString.length()-1);
+		
+		jsonString += "}";
+		
+		return jsonString;
+		
 	}
 	
 	/**
@@ -585,9 +616,9 @@ public class Query {
 	
 	private class FieldValue{
 		public String field;
-		public String value;
+		public Object value;
 		
-		public FieldValue(String field, String value){
+		public FieldValue(String field, Object value){
 			this.field = field;
 			this.value = value;
 		}

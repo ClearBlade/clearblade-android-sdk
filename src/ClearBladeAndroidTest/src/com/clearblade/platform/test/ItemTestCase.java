@@ -20,7 +20,7 @@ public class ItemTestCase extends AndroidTestCase {
 	
 	private static String testCollectionID = "d6ca95af0ad8c7cabfedfcc895b001";
 	
-	private static String testItemID = "c40e7f31-9f0b11e3-9306-bc764e0487f9";
+	private static String testItemID = "2b58c44f-9fdc-11e3-ad92-bc764e0487f9";
 
 	private void initClearBladeSDK() throws Throwable{
 		

@@ -369,8 +369,8 @@ public class QueryTestCase extends AndroidTestCase {
 		
 		final CountDownLatch signal = new CountDownLatch(1);
 		
-		//create random int between 21 and 39 so that other tests aren't affected
-		final Integer randomNum = 21 + (int)(Math.random() * ((39 - 21) + 1));
+		//create random int between 23 and 39 so that other tests aren't affected
+		final Integer randomNum = 23 + (int)(Math.random() * ((39 - 23) + 1));
 		
 		Query testQuery = new Query(queryCollectionID);
 		testQuery.equalTo("firstname", "Alex");

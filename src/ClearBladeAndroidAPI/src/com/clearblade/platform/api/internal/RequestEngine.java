@@ -170,7 +170,7 @@ public class RequestEngine {
 			// endpoints, we add all 3, otherwise we add token
 			String reqURL = this.headers.getUri().toLowerCase();
 			boolean isLogoutOrAuthCheck = (reqURL.contains("api/user/logout") ||
-											reqURL.contains("api/user/check"));
+											reqURL.contains("api/user/checkauth"));
 			boolean isAuthOrReg = (reqURL.contains("api/user/auth") ||
 									reqURL.contains("api/user/anon") ||
 									reqURL.contains("api/user/reg"));

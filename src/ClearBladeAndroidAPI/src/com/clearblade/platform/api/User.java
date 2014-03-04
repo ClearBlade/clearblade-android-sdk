@@ -49,7 +49,7 @@ public class User {
 		UserTask asyncFetch = new UserTask(new PlatformCallback(this, callback){
 			@Override
 			public void done(String response){
-				authToken = getUserTokenFromJSON(response);
+				authToken = getPropertyValueFromJSONString("user_token", response);
 				callback.done(true);
 			}
 			@Override
@@ -104,7 +104,7 @@ public class User {
 		UserTask asyncFetch = new UserTask(new PlatformCallback(this, callback){
 			@Override
 			public void done(String response){
-				authToken = getUserTokenFromJSON(response);
+				authToken = getPropertyValueFromJSONString("user_token", response);
 				callback.done(true);
 			}
 			@Override
@@ -121,13 +121,18 @@ public class User {
 	public void checkUserAuth(final InitCallback callback){
 		request = new RequestEngine();
 
-		RequestProperties headers = new RequestProperties.Builder().method("POST").endPoint("api/user/check").build();
+		RequestProperties headers = new RequestProperties.Builder().method("POST").endPoint("api/user/checkauth").build();
 		request.setHeaders(headers);
 
 		UserTask asyncFetch = new UserTask(new PlatformCallback(this, callback){
 			@Override
 			public void done(String response){
-				callback.done(true);
+				String respValue = getPropertyValueFromJSONString("is_authenticated", response);
+				if(respValue.equalsIgnoreCase("true")){
+					callback.done(true);
+				}else{
+					callback.done(false);
+				}
 			}
 			@Override
 			public void error(ClearBladeException exception){
@@ -163,14 +168,14 @@ public class User {
 
 	}
 	
-	private String getUserTokenFromJSON(String json){
-		String authToken = null;
+	private String getPropertyValueFromJSONString(String property, String json){
+		String value = null;
 		
 		JsonParser parser = new JsonParser();
 		JsonObject o = (JsonObject)parser.parse(json);
 		
-		authToken = o.get("user_token").getAsString();
+		value = o.get(property).getAsString();
 		
-		return authToken;
+		return value;
 	}
 }

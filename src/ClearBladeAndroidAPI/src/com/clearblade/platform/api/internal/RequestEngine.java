@@ -164,24 +164,27 @@ public class RequestEngine {
 			urlConnection.setRequestMethod(method);
 			urlConnection.setConnectTimeout(this.headers.getTimeout());
 
-			//things get iffy here. most requests should just need usertoken, but you need key/secret
-			// to get token on first request. also both token and key/secret are needed for logout and auth check requests.
-			// so if the url cotains the logout or check endpoints, we add all 3, otherwise we add token or if that is null,
-			// just add key/secret
-			boolean isLogout = this.headers.getUri().toLowerCase().contains("api/user/logout");
-			boolean isAuthCheck = this.headers.getUri().toLowerCase().contains("api/user/check");
+			//things get ugly here. most requests should just need usertoken, but you need key/secret
+			// to get token on the auth request and to register new user. also both token and key/secret 
+			// are needed for logout and auth check requests. so if the url cotains the logout or check 
+			// endpoints, we add all 3, otherwise we add token
+			String reqURL = this.headers.getUri().toLowerCase();
+			boolean isLogoutOrAuthCheck = (reqURL.contains("api/user/logout") ||
+											reqURL.contains("api/user/check"));
+			boolean isAuthOrReg = (reqURL.contains("api/user/auth") ||
+									reqURL.contains("api/user/anon") ||
+									reqURL.contains("api/user/reg"));
 			String userToken = ClearBlade.getCurrentUser().getAuthToken();
-			if(isLogout || isAuthCheck){
+			if(isLogoutOrAuthCheck){
 				urlConnection.setRequestProperty("CLEARBLADE-SYSTEMKEY", Util.getSystemKey());
 				urlConnection.setRequestProperty("CLEARBLADE-SYSTEMSECRET", Util.getSystemSecret());
 				urlConnection.setRequestProperty("ClearBlade-UserToken", userToken);
+			}else if(isAuthOrReg){
+				urlConnection.setRequestProperty("CLEARBLADE-SYSTEMKEY", Util.getSystemKey());
+				urlConnection.setRequestProperty("CLEARBLADE-SYSTEMSECRET", Util.getSystemSecret());
 			}else if(userToken != null){
 				urlConnection.setRequestProperty("ClearBlade-UserToken", userToken);
-			}else{
-				urlConnection.setRequestProperty("CLEARBLADE-SYSTEMKEY", Util.getSystemKey());
-				urlConnection.setRequestProperty("CLEARBLADE-SYSTEMSECRET", Util.getSystemSecret());
 			}
-
 			urlConnection.setRequestProperty("Accept", "application/json");
 			urlConnection.setRequestProperty("Accept-Charset", charset);
 			

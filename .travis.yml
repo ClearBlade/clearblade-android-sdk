@@ -8,5 +8,5 @@ before_install:
   - export ANDROID_HOME=`pwd`/android-sdk-linux
   - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
   #This has to be separated into two calls, because android might have some of the worst possible package management tools ever made.
-  - android update sdk --filter 1,2,3,5 --force --no-ui <<< "y"
-  - android update sdk --filter 28 --force --no-ui <<< "y"
+  - android update sdk --all --filter 1,2,3,5 --force --no-ui <<< "y"
+  - android update sdk --all --filter 28 --force --no-ui <<< "y"

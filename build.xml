@@ -9,8 +9,6 @@
       <arg value="ClearBlade-Android" />
       <arg value="-t" />
       <arg value="android-19" />
-      <arg value="--abi" />
-      <arg value="x86" />
       <arg value="-f" />
     </exec>
   </target>

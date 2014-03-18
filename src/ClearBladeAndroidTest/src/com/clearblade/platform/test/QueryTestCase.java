@@ -86,7 +86,10 @@ public class QueryTestCase extends AndroidTestCase {
 		final CountDownLatch signal = new CountDownLatch(1);
 		
 		Query testQuery = new Query(queryCollectionID);
+		Query temp = new Query(queryCollectionID);
+		temp.equalTo("age", 18);
 		testQuery.equalTo("age", 22);
+		testQuery.or(temp);
 		testQuery.fetch(new DataCallback(){
 			@Override
 			public void done(Item[] items) {

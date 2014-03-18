@@ -1,8 +1,15 @@
 package com.clearblade.platform.api;
 
+import com.google.gson.JsonElement;
+
 
 public abstract class DataCallback {
-	public abstract void done(Item[] response);
+	public void done(Item[] response){
+		
+	}
+	public void done(JsonElement response){
+		
+	}
 	public void error(ClearBladeException exception){
 		
 	}

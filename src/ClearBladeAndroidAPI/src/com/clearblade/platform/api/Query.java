@@ -56,8 +56,8 @@ public class Query {
 	private String collectionId;
 	private QueryObj queryObj = new QueryObj();
 	private ArrayList<QueryObj> queryObjs = new ArrayList<QueryObj>();
-	private int limit;
-	private int offset;
+	private int pageSize;
+	private int pageNum;
 	
 	private RequestEngine request;	// used to make API requests
 
@@ -259,8 +259,8 @@ public class Query {
 	}
 	
 	public void or(Query orQuery){
-		queryObjs.add(queryObj);
-		queryObj = orQuery.queryObj;
+		queryObjs.add(orQuery.queryObj);
+		//queryObj = orQuery.queryObj;
 	}
 	
 	/**
@@ -276,8 +276,8 @@ public class Query {
 	 * </pre>
 	 * @param field - name of the column to be used for sorting in descending manner
 	 */
-	public void setLimit(int limit){
-		this.limit = limit;
+	public void setPageSize(int pageSize){
+		this.pageSize = pageSize;
 	}
 	
 	/**
@@ -293,8 +293,8 @@ public class Query {
 	 * </pre>
 	 * @param field - name of the column to be used for sorting in descending manner
 	 */
-	public void setOffset(int offset) {
-		this.offset = offset;
+	public void setPageNum(int pageNum) {
+		this.pageNum = pageNum;
 	}
 	
 	/**
@@ -316,8 +316,8 @@ public class Query {
 
 			@Override
 			public void done(String response) {
-				Item[] ret = convertJsonArrayToItemArray(response);
-				callback.done(ret);
+				//return json element so dev can access paging data included in response
+				callback.done(new JsonParser().parse(response));
 			}
 
 			@Override
@@ -344,7 +344,7 @@ public class Query {
 	}
 	
 	private void fetchSetup(){
-		String queryParam = getURLParameter();
+		String queryParam = getFetchURLParameter();
 		RequestProperties headers = new RequestProperties.Builder().method("GET").endPoint("api/" +collectionId+ queryParam).build();
 		request.setHeaders(headers);
 	}
@@ -352,6 +352,63 @@ public class Query {
 //	public Item[] fetch(){
 //		return null;
 //	}
+	
+	protected String filtersAsJsonString() {
+		ArrayList<QueryObj> temp = queryObjs;
+		if (queryObjs.size()==0) {
+			//we havent done an or, so just build up an array of the queryObj
+			//we can use the queryObjs list becuase the user may continue to build on the Query
+			//for future use
+			temp = new ArrayList<QueryObj>();
+		}
+		temp.add(queryObj);
+		String param = "";//gson.toJson(temp);
+		Iterator<QueryObj> it = temp.iterator();
+		while(it.hasNext())
+		{
+		    QueryObj obj = it.next();
+		    param = param+stringifyQuery(obj);
+		    if (it.hasNext()){
+		    	//there is an or
+		    	param=param+",";
+		    }
+		}
+		if (param.length()>0) {
+			param="["+param+"]";
+		}
+		
+		return param;
+	}
+	
+	/**
+	 * Internal only, made public for test and verification.  Returns the query string parameter necessary to implement the fetch query
+	 * @return String
+	 */
+	public String getFetchURLParameter(){
+		String param = "{";
+		//add filters to url param
+		param += "\"FILTERS\":" + filtersAsJsonString();
+		//if defined add page num
+		if(this.pageNum >= 0){
+			param += ",\"PAGENUM\":" + this.pageNum;
+		}
+		//if defined add page size
+		if(this.pageSize > 0){
+			param += ",\"PAGESIZE\":" + this.pageSize;
+		}
+		//if defined add sort
+		param += "}";
+		System.out.println(param);
+		try {
+			param = URLEncoder.encode(param, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		if (param.length()>0){
+			param = "?query="+param;
+		}
+		return param;
+	}
 	
 	protected String queryAsJsonString() {
 		ArrayList<QueryObj> temp = queryObjs;

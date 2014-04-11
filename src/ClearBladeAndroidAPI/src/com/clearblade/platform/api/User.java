@@ -43,7 +43,7 @@ public class User {
 		payload.addProperty("email", this.getEmail());
 		payload.addProperty("password", password);
 		
-		RequestProperties headers = new RequestProperties.Builder().method("POST").endPoint("api/user/auth").body(payload).build();
+		RequestProperties headers = new RequestProperties.Builder().method("POST").endPoint("api/v/1/user/auth").body(payload).build();
 		request.setHeaders(headers);
 		
 		UserTask asyncFetch = new UserTask(new PlatformCallback(this, callback){
@@ -71,7 +71,7 @@ public class User {
 		payload.addProperty("email", this.getEmail());
 		payload.addProperty("password", password);
 		
-		RequestProperties headers = new RequestProperties.Builder().method("POST").endPoint("api/user/reg").body(payload).build();
+		RequestProperties headers = new RequestProperties.Builder().method("POST").endPoint("api/v/1/user/reg").body(payload).build();
 		request.setHeaders(headers);
 		
 		UserTask asyncFetch = new UserTask(new PlatformCallback(this, callback){
@@ -98,7 +98,7 @@ public class User {
 	public void authWithAnonUser(final InitCallback callback) {
 		request = new RequestEngine();
 
-		RequestProperties headers = new RequestProperties.Builder().method("POST").endPoint("api/user/anon").build();
+		RequestProperties headers = new RequestProperties.Builder().method("POST").endPoint("api/v/1/user/anon").build();
 		request.setHeaders(headers);
 
 		UserTask asyncFetch = new UserTask(new PlatformCallback(this, callback){
@@ -121,7 +121,7 @@ public class User {
 	public void checkUserAuth(final InitCallback callback){
 		request = new RequestEngine();
 
-		RequestProperties headers = new RequestProperties.Builder().method("POST").endPoint("api/user/checkauth").build();
+		RequestProperties headers = new RequestProperties.Builder().method("POST").endPoint("api/v/1/user/checkauth").build();
 		request.setHeaders(headers);
 
 		UserTask asyncFetch = new UserTask(new PlatformCallback(this, callback){
@@ -148,7 +148,7 @@ public class User {
 
 		request = new RequestEngine();
 
-		RequestProperties headers = new RequestProperties.Builder().method("POST").endPoint("api/user/logout").build();
+		RequestProperties headers = new RequestProperties.Builder().method("POST").endPoint("api/v/1/user/logout").build();
 		request.setHeaders(headers);
 
 		UserTask asyncFetch = new UserTask(new PlatformCallback(this, callback){

@@ -169,11 +169,11 @@ public class RequestEngine {
 			// are needed for logout and auth check requests. so if the url cotains the logout or check 
 			// endpoints, we add all 3, otherwise we add token
 			String reqURL = this.headers.getUri().toLowerCase();
-			boolean isLogoutOrAuthCheck = (reqURL.contains("api/user/logout") ||
-											reqURL.contains("api/user/checkauth"));
-			boolean isAuthOrReg = (reqURL.contains("api/user/auth") ||
-									reqURL.contains("api/user/anon") ||
-									reqURL.contains("api/user/reg"));
+			boolean isLogoutOrAuthCheck = (reqURL.contains("/user/logout") ||
+											reqURL.contains("/user/checkauth"));
+			boolean isAuthOrReg = (reqURL.contains("/user/auth") ||
+									reqURL.contains("/user/anon") ||
+									reqURL.contains("/user/reg"));
 			String userToken = ClearBlade.getCurrentUser().getAuthToken();
 			if(isLogoutOrAuthCheck){
 				urlConnection.setRequestProperty("CLEARBLADE-SYSTEMKEY", Util.getSystemKey());

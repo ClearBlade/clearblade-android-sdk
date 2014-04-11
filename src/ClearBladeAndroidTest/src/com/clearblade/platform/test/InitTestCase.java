@@ -14,8 +14,13 @@ import android.test.AndroidTestCase;
 
 public class InitTestCase extends AndroidTestCase {
 	
-	private static String systemKey = "c2c895af0af087bea2e1f2a4fb0b";
-	private static String systemSecret = "C2C895AF0A98FAE0CEF2A4AF890B";
+	//prod
+	//private static String systemKey = "c2c895af0af087bea2e1f2a4fb0b";
+	//private static String systemSecret = "C2C895AF0A98FAE0CEF2A4AF890B";
+	
+	//rtp
+	private static String systemKey = "e6cf96b40ab4868aeba0e48e83b601";
+	private static String systemSecret = "E6CF96B40AB68BA7C39A91FAB95D";
 	
 	
 	public void testAnonymousInitWithAuthRequired() throws Throwable{
@@ -27,16 +32,21 @@ public class InitTestCase extends AndroidTestCase {
 		
 		final CountDownLatch signal = new CountDownLatch(1);
 		
-		ClearBlade.initialize(systemKey, systemSecret, new InitCallback(){
+		HashMap<String,Object> initOptions = new HashMap<String,Object>();
+		
+		initOptions.put("platformURL", "https://rtp.clearblade.com");
+		initOptions.put("allowUntrusted", true);
+		
+		ClearBlade.initialize(systemKey, systemSecret, initOptions, new InitCallback(){
 
 			@Override
 			public void done(boolean results) {
-				fail("Able to authenticate as an anonymous user against a system with auth required set to true.");
+				assertNotNull(ClearBlade.getCurrentUser().getAuthToken());
 				signal.countDown();
 			}
 			@Override
 			public void error(ClearBladeException e){
-				assertNull(ClearBlade.getCurrentUser().getAuthToken());
+				fail(e.getMessage());
 				signal.countDown();
 			}
 			
@@ -59,6 +69,8 @@ public class InitTestCase extends AndroidTestCase {
 		
 		initOptions.put("email", "android@test.com");
 		initOptions.put("password", "android_test");
+		initOptions.put("platformURL", "https://rtp.clearblade.com");
+		initOptions.put("allowUntrusted", true);
 		
 		ClearBlade.initialize(systemKey, systemSecret, initOptions, new InitCallback(){
 
@@ -98,6 +110,8 @@ public class InitTestCase extends AndroidTestCase {
 		initOptions.put("email", email);
 		initOptions.put("password", "android_test");
 		initOptions.put("registerUser", true);
+		initOptions.put("platformURL", "https://rtp.clearblade.com");
+		initOptions.put("allowUntrusted", true);
 		
 		ClearBlade.initialize(systemKey, systemSecret, initOptions, new InitCallback(){
 
@@ -138,6 +152,8 @@ public class InitTestCase extends AndroidTestCase {
 		initOptions.put("email", email);
 		initOptions.put("password", "android_test");
 		initOptions.put("registerUser", false);
+		initOptions.put("platformURL", "https://rtp.clearblade.com");
+		initOptions.put("allowUntrusted", true);
 		
 		ClearBlade.initialize(systemKey, systemSecret, initOptions, new InitCallback(){
 

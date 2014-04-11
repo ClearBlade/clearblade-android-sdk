@@ -17,8 +17,13 @@ import junit.framework.TestCase;
 
 public class MessagingTestCase extends AndroidTestCase {
 	
-	private static String systemKey = "c2c895af0af087bea2e1f2a4fb0b";
-	private static String systemSecret = "C2C895AF0A98FAE0CEF2A4AF890B";
+	//prod
+	//private static String systemKey = "c2c895af0af087bea2e1f2a4fb0b";
+	//private static String systemSecret = "C2C895AF0A98FAE0CEF2A4AF890B";
+	
+	//rtp
+	private static String systemKey = "e6cf96b40ab4868aeba0e48e83b601";
+	private static String systemSecret = "E6CF96B40AB68BA7C39A91FAB95D";
 
 	private void initClearBladeSDK() throws Throwable{
 		
@@ -33,6 +38,10 @@ public class MessagingTestCase extends AndroidTestCase {
 		
 		initOptions.put("email", "android@test.com");
 		initOptions.put("password", "android_test");
+		//rtp
+		initOptions.put("platformURL", "https://rtp.clearblade.com");
+		initOptions.put("allowUntrusted", true);
+		initOptions.put("messagingURL", "tcp://rtp.clearblade.com:1883");
 		
 		ClearBlade.initialize(systemKey, systemSecret, initOptions, new InitCallback(){
 
@@ -91,6 +100,7 @@ public class MessagingTestCase extends AndroidTestCase {
 		message.publish(testTopic, testMessage);
 		
 		signal.await();
+		
 	}
 
 }

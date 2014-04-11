@@ -15,12 +15,21 @@ import junit.framework.TestCase;
 
 public class ItemTestCase extends AndroidTestCase {
 
-	private static String systemKey = "c2c895af0af087bea2e1f2a4fb0b";
-	private static String systemSecret = "C2C895AF0A98FAE0CEF2A4AF890B";
+	//prod
+	//private static String systemKey = "c2c895af0af087bea2e1f2a4fb0b";
+	//private static String systemSecret = "C2C895AF0A98FAE0CEF2A4AF890B";
 	
-	private static String testCollectionID = "d6ca95af0ad8c7cabfedfcc895b001";
+	//private static String testCollectionID = "d6ca95af0ad8c7cabfedfcc895b001";
 	
-	private static String testItemID = "2b58c44f-9fdc-11e3-ad92-bc764e0487f9";
+	//private static String testItemID = "2b58c44f-9fdc-11e3-ad92-bc764e0487f9";
+	
+	//rtp
+	private static String systemKey = "e6cf96b40ab4868aeba0e48e83b601";
+	private static String systemSecret = "E6CF96B40AB68BA7C39A91FAB95D";
+	
+	private static String testCollectionID = "b8c7b6b40a80a28ce6af8deeeeb101";
+	
+	private static String testItemID = "e549fdb2-c0d3-11e3-9b7f-f0def1a7ff39";
 
 	private void initClearBladeSDK() throws Throwable{
 		
@@ -35,6 +44,9 @@ public class ItemTestCase extends AndroidTestCase {
 		
 		initOptions.put("email", "android@test.com");
 		initOptions.put("password", "android_test");
+		
+		initOptions.put("platformURL", "https://rtp.clearblade.com");
+		initOptions.put("allowUntrusted", true);
 		
 		ClearBlade.initialize(systemKey, systemSecret, initOptions, new InitCallback(){
 

@@ -13,5 +13,8 @@ public abstract class DataCallback {
 	public void error(ClearBladeException exception){
 		
 	}
+	public void done(QueryResponse resp) {
+		
+	}
 	
 }

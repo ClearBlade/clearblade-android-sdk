@@ -12,6 +12,7 @@ import com.clearblade.platform.api.internal.PlatformCallback;
 import com.clearblade.platform.api.internal.PlatformResponse;
 import com.clearblade.platform.api.internal.RequestEngine;
 import com.clearblade.platform.api.internal.RequestProperties;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -56,8 +57,8 @@ public class Query {
 	private String collectionId;
 	private QueryObj queryObj = new QueryObj();
 	private ArrayList<QueryObj> queryObjs = new ArrayList<QueryObj>();
-	private int pageSize;
-	private int pageNum;
+	private int pageSize = -1;
+	private int pageNum = -1;
 	
 	private RequestEngine request;	// used to make API requests
 
@@ -316,8 +317,11 @@ public class Query {
 
 			@Override
 			public void done(String response) {
-				//return json element so dev can access paging data included in response
-				callback.done(new JsonParser().parse(response));
+				Gson gson = new Gson();
+				QueryResponse resp = gson.fromJson(response, QueryResponse.class);
+				//because item is dynamic, we need to populate the array outside of gson
+				resp.setDataItems(convertJsonArrayToItemArray(resp.getDataJsonAsString()));
+				callback.done(resp);
 			}
 
 			@Override
@@ -345,7 +349,8 @@ public class Query {
 	
 	private void fetchSetup(){
 		String queryParam = getFetchURLParameter();
-		RequestProperties headers = new RequestProperties.Builder().method("GET").endPoint("api/" +collectionId+ queryParam).build();
+		RequestProperties headers = new RequestProperties.Builder().method("GET").endPoint("api/v/1/data/" +collectionId+ queryParam).build();
+		System.out.println(headers.getUri());
 		request.setHeaders(headers);
 	}
 	
@@ -367,14 +372,14 @@ public class Query {
 		while(it.hasNext())
 		{
 		    QueryObj obj = it.next();
-		    param = param+stringifyQuery(obj);
+		    param = param+"["+stringifyQuery(obj);
 		    if (it.hasNext()){
 		    	//there is an or
-		    	param=param+",";
+		    	param=param+"],";
 		    }
 		}
 		if (param.length()>0) {
-			param="["+param+"]";
+			param="["+param+"]]";
 		}
 		
 		return param;
@@ -393,10 +398,10 @@ public class Query {
 			param += ",\"PAGENUM\":" + this.pageNum;
 		}
 		//if defined add page size
-		if(this.pageSize > 0){
+		if(this.pageSize >= 0){
 			param += ",\"PAGESIZE\":" + this.pageSize;
 		}
-		//if defined add sort
+		//TODO: if defined add sort
 		param += "}";
 		System.out.println(param);
 		try {
@@ -568,7 +573,7 @@ public class Query {
 		//JsonObject query = new JsonObject();
 		JsonElement toObject = new JsonParser().parse(queryAsJsonString());
 		payload.add("query", toObject);
-		RequestProperties headers = new RequestProperties.Builder().method("PUT").endPoint("api/" + collectionId).body(payload).build();
+		RequestProperties headers = new RequestProperties.Builder().method("PUT").endPoint("api/v/1/data/" + collectionId).body(payload).build();
 		request.setHeaders(headers);
 	}
 	
@@ -618,7 +623,7 @@ public class Query {
 
 		String queryParam = getURLParameter();
 		
-		RequestProperties headers = new RequestProperties.Builder().method("DELETE").endPoint("api/" +collectionId+ queryParam).build();
+		RequestProperties headers = new RequestProperties.Builder().method("DELETE").endPoint("api/v/1/data/" +collectionId+ queryParam).build();
 		request.setHeaders(headers);
 		
 		DataTask asyncFetch = new DataTask(new PlatformCallback(this, callback){
@@ -653,7 +658,7 @@ public class Query {
 	private void removeSetup(){
 		String queryParam = getURLParameter();
 		
-		RequestProperties headers = new RequestProperties.Builder().method("DELETE").endPoint("api/" +collectionId+ queryParam).build();
+		RequestProperties headers = new RequestProperties.Builder().method("DELETE").endPoint("api/v/1/data/" +collectionId+ queryParam).build();
 		request.setHeaders(headers);
 	}
 

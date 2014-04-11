@@ -5,3 +5,4 @@ gen/
 .*.swp
 local.properties
 .classpath
+.DS_Store

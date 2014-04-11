@@ -361,7 +361,7 @@ public class Item {
 	private void loadSetup(String itemId){
 		JsonObject queryString = new JsonObject();
 		queryString.addProperty("item_id", itemId);
-		RequestProperties headers = new RequestProperties.Builder().method("GET").endPoint("api/" + collectionId).qs(queryString).build();
+		RequestProperties headers = new RequestProperties.Builder().method("GET").endPoint("api/v/1/data/" + collectionId).qs(queryString).build();
 		request.setHeaders(headers);
 		
 	}
@@ -414,7 +414,7 @@ public class Item {
 	private void saveSetup(){
 		RequestProperties headers = null;
 		if(this.getString("item_id") == null ) {
-			headers = new RequestProperties.Builder().method("POST").endPoint("api/" + collectionId).body(this.json).build();
+			headers = new RequestProperties.Builder().method("POST").endPoint("api/v/1/data/" + collectionId).body(this.json).build();
 		} else {
 			// Create Payload object
 			JsonObject payload = new JsonObject();
@@ -422,7 +422,7 @@ public class Item {
 			JsonObject query = new JsonObject();
 			query.addProperty("item_id", this.getString("item_id"));
 			payload.addProperty("query", query.toString());
-			headers = new RequestProperties.Builder().method("PUT").endPoint("api/" + collectionId).body(payload).build();
+			headers = new RequestProperties.Builder().method("PUT").endPoint("api/v/1/data/" + collectionId).body(payload).build();
 		}
 
 		request.setHeaders(headers);

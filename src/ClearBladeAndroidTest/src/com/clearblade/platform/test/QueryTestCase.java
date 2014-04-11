@@ -10,17 +10,26 @@ import com.clearblade.platform.api.DataCallback;
 import com.clearblade.platform.api.InitCallback;
 import com.clearblade.platform.api.Item;
 import com.clearblade.platform.api.Query;
+import com.clearblade.platform.api.QueryResponse;
+import com.google.gson.Gson;
 
 import android.test.AndroidTestCase;
 import junit.framework.TestCase;
 
 public class QueryTestCase extends AndroidTestCase {
 	
-	private static String systemKey = "c2c895af0af087bea2e1f2a4fb0b";
-	private static String systemSecret = "C2C895AF0A98FAE0CEF2A4AF890B";
+	//prod system info
+	//private static String systemKey = "c2c895af0af087bea2e1f2a4fb0b";
+	//private static String systemSecret = "C2C895AF0A98FAE0CEF2A4AF890B";
 	
-	private static String queryCollectionID = "f8a0f1b00a90c9969eadd695d21d";
+	//private static String queryCollectionID = "f8a0f1b00a90c9969eadd695d21d";
 
+	//rtp system info
+	private static String systemKey = "e6cf96b40ab4868aeba0e48e83b601";
+	private static String systemSecret = "E6CF96B40AB68BA7C39A91FAB95D";
+	
+	private static String queryCollectionID = "c8d796b40adcbefc9ecfb2ebaf05";
+	
 	private void initClearBladeSDK() throws Throwable{
 		
 		//make sure auth token isn't lingering from other tests
@@ -34,6 +43,10 @@ public class QueryTestCase extends AndroidTestCase {
 		
 		initOptions.put("email", "android@test.com");
 		initOptions.put("password", "android_test");
+		
+		//used for rtp testing
+		initOptions.put("platformURL", "https://rtp.clearblade.com");
+		initOptions.put("allowUntrusted", true);
 		
 		ClearBlade.initialize(systemKey, systemSecret, initOptions, new InitCallback(){
 
@@ -53,6 +66,61 @@ public class QueryTestCase extends AndroidTestCase {
 		
 	}
 	
+	public void testQueryPagination() throws Throwable{
+		initClearBladeSDK();
+		
+		final CountDownLatch signal = new CountDownLatch(1);
+		
+		Query testQuery = new Query(queryCollectionID);
+		testQuery.equalTo("firstname", "Michael");
+		Query temp = new Query(queryCollectionID);
+		temp.equalTo("firstname", "Alex");
+		testQuery.or(temp);
+		testQuery.setPageSize(1);
+		testQuery.fetch(new DataCallback(){
+			@Override
+			public void done(QueryResponse resp) {
+				assertEquals(1, resp.getDataItems().length);
+				assertNotNull(resp.getNextPageURL());
+				assertNull(resp.getPrevPageURL());
+				assertEquals(1, resp.getCurrentPage());
+				assertEquals(2, resp.getTotalCount());
+				signal.countDown();
+			}
+			@Override
+			public void error(ClearBladeException e){
+				fail("Failed to query item: " + e.getMessage());
+				signal.countDown();
+			}
+		});
+		
+		signal.await();
+	}
+	
+	public void testQueryReturnsNothing() throws Throwable{
+		
+		initClearBladeSDK();
+		
+		final CountDownLatch signal = new CountDownLatch(1);
+		
+		Query testQuery = new Query(queryCollectionID);
+		testQuery.equalTo("firstname", "NOTHING AT ALL");
+		testQuery.fetch(new DataCallback(){
+			@Override
+			public void done(QueryResponse resp) {
+				assertEquals(0, resp.getDataItems().length);
+				signal.countDown();
+			}
+			@Override
+			public void error(ClearBladeException e){
+				fail("Failed to query item: " + e.getMessage());
+				signal.countDown();
+			}
+		});
+		
+		signal.await();
+	}
+	
 	public void testQueryEqualToString() throws Throwable{
 		
 		initClearBladeSDK();
@@ -63,10 +131,10 @@ public class QueryTestCase extends AndroidTestCase {
 		testQuery.equalTo("firstname", "Michael");
 		testQuery.fetch(new DataCallback(){
 			@Override
-			public void done(Item[] items) {
-				assertEquals(1, items.length);
-				assertEquals("Michael", items[0].getString("firstname"));
-				assertEquals(22, items[0].getInt("age"));
+			public void done(QueryResponse resp) {
+				assertEquals(1, resp.getDataItems().length);
+				assertEquals("Michael", resp.getDataItems()[0].getString("firstname"));
+				assertEquals(22, resp.getDataItems()[0].getInt("age"));
 				signal.countDown();
 			}
 			@Override
@@ -86,16 +154,12 @@ public class QueryTestCase extends AndroidTestCase {
 		final CountDownLatch signal = new CountDownLatch(1);
 		
 		Query testQuery = new Query(queryCollectionID);
-		Query temp = new Query(queryCollectionID);
-		temp.equalTo("age", 18);
 		testQuery.equalTo("age", 22);
-		testQuery.or(temp);
 		testQuery.fetch(new DataCallback(){
-			@Override
-			public void done(Item[] items) {
-				assertEquals(1, items.length);
-				assertEquals("Michael", items[0].getString("firstname"));
-				assertEquals(22, items[0].getInt("age"));
+			public void done(QueryResponse resp) {
+				assertEquals(1, resp.getDataItems().length);
+				assertEquals("Michael", resp.getDataItems()[0].getString("firstname"));
+				assertEquals(22, resp.getDataItems()[0].getInt("age"));
 				signal.countDown();
 			}
 			@Override
@@ -106,7 +170,10 @@ public class QueryTestCase extends AndroidTestCase {
 		});
 		
 		signal.await();
+		
 	}
+	
+	//not supported currently, temp removed
 	
 	public void testQueryNotEqualToString() throws Throwable{
 		
@@ -118,8 +185,8 @@ public class QueryTestCase extends AndroidTestCase {
 		testQuery.notEqual("firstname", "Michael");
 		testQuery.fetch(new DataCallback(){
 			@Override
-			public void done(Item[] items){
-				assertEquals(5, items.length);
+			public void done(QueryResponse resp){
+				assertEquals(5, resp.getDataItems().length);
 				signal.countDown();
 			}
 			@Override
@@ -130,6 +197,7 @@ public class QueryTestCase extends AndroidTestCase {
 		});
 		
 		signal.await();
+		
 	}
 	
 	public void testQueryNotEqualToInt() throws Throwable{
@@ -142,8 +210,8 @@ public class QueryTestCase extends AndroidTestCase {
 		testQuery.notEqual("age", 22);
 		testQuery.fetch(new DataCallback(){
 			@Override
-			public void done(Item[] items){
-				assertEquals(5, items.length);
+			public void done(QueryResponse resp){
+				assertEquals(5, resp.getDataItems().length);
 				signal.countDown();
 			}
 			@Override
@@ -154,6 +222,7 @@ public class QueryTestCase extends AndroidTestCase {
 		});
 		
 		signal.await();
+		
 	}
 	
 	public void testQueryGreaterThanString() throws Throwable{
@@ -166,10 +235,10 @@ public class QueryTestCase extends AndroidTestCase {
 		testQuery.greaterThan("firstname", "Michael");
 		testQuery.fetch(new DataCallback(){
 			@Override
-			public void done(Item[] items){
-				assertEquals(1, items.length);
-				assertEquals("Trevor", items[0].getString("firstname"));
-				assertEquals(32, items[0].getInt("age"));
+			public void done(QueryResponse resp){
+				assertEquals(1, resp.getDataItems().length);
+				assertEquals("Trevor", resp.getDataItems()[0].getString("firstname"));
+				assertEquals(32, resp.getDataItems()[0].getInt("age"));
 				signal.countDown();
 			}
 			@Override
@@ -192,10 +261,10 @@ public class QueryTestCase extends AndroidTestCase {
 		testQuery.greaterThan("age", 40);
 		testQuery.fetch(new DataCallback(){
 			@Override
-			public void done(Item[] items){
-				assertEquals(1, items.length);
-				assertEquals("Eric", items[0].getString("firstname"));
-				assertEquals(45, items[0].getInt("age"));
+			public void done(QueryResponse resp){
+				assertEquals(1, resp.getDataItems().length);
+				assertEquals("Eric", resp.getDataItems()[0].getString("firstname"));
+				assertEquals(45, resp.getDataItems()[0].getInt("age"));
 				signal.countDown();
 			}
 			@Override
@@ -218,10 +287,10 @@ public class QueryTestCase extends AndroidTestCase {
 		testQuery.greaterThanEqualTo("firstname", "Trevor");
 		testQuery.fetch(new DataCallback(){
 			@Override
-			public void done(Item[] items){
-				assertEquals(1, items.length);
-				assertEquals("Trevor", items[0].getString("firstname"));
-				assertEquals(32, items[0].getInt("age"));
+			public void done(QueryResponse resp){
+				assertEquals(1, resp.getDataItems().length);
+				assertEquals("Trevor", resp.getDataItems()[0].getString("firstname"));
+				assertEquals(32, resp.getDataItems()[0].getInt("age"));
 				signal.countDown();
 			}
 			@Override
@@ -244,10 +313,10 @@ public class QueryTestCase extends AndroidTestCase {
 		testQuery.greaterThanEqualTo("age", 45);
 		testQuery.fetch(new DataCallback(){
 			@Override
-			public void done(Item[] items){
-				assertEquals(1, items.length);
-				assertEquals("Eric", items[0].getString("firstname"));
-				assertEquals(45, items[0].getInt("age"));
+			public void done(QueryResponse resp){
+				assertEquals(1, resp.getDataItems().length);
+				assertEquals("Eric", resp.getDataItems()[0].getString("firstname"));
+				assertEquals(45, resp.getDataItems()[0].getInt("age"));
 				signal.countDown();
 			}
 			@Override
@@ -270,10 +339,10 @@ public class QueryTestCase extends AndroidTestCase {
 		testQuery.lessThan("firstname", "Alex");
 		testQuery.fetch(new DataCallback(){
 			@Override
-			public void done(Item[] items){
-				assertEquals(1, items.length);
-				assertEquals("Aaron", items[0].getString("firstname"));
-				assertEquals(35, items[0].getInt("age"));
+			public void done(QueryResponse resp){
+				assertEquals(1, resp.getDataItems().length);
+				assertEquals("Aaron", resp.getDataItems()[0].getString("firstname"));
+				assertEquals(35, resp.getDataItems()[0].getInt("age"));
 				signal.countDown();
 			}
 			@Override
@@ -296,10 +365,10 @@ public class QueryTestCase extends AndroidTestCase {
 		testQuery.lessThan("age", 20);
 		testQuery.fetch(new DataCallback(){
 			@Override
-			public void done(Item[] items){
-				assertEquals(1, items.length);
-				assertEquals("Brian", items[0].getString("firstname"));
-				assertEquals(18, items[0].getInt("age"));
+			public void done(QueryResponse resp){
+				assertEquals(1, resp.getDataItems().length);
+				assertEquals("Brian", resp.getDataItems()[0].getString("firstname"));
+				assertEquals(18, resp.getDataItems()[0].getInt("age"));
 				signal.countDown();
 			}
 			@Override
@@ -322,10 +391,10 @@ public class QueryTestCase extends AndroidTestCase {
 		testQuery.lessThanEqualTo("firstname", "Aaron");
 		testQuery.fetch(new DataCallback(){
 			@Override
-			public void done(Item[] items){
-				assertEquals(1, items.length);
-				assertEquals("Aaron", items[0].getString("firstname"));
-				assertEquals(35, items[0].getInt("age"));
+			public void done(QueryResponse resp){
+				assertEquals(1, resp.getDataItems().length);
+				assertEquals("Aaron", resp.getDataItems()[0].getString("firstname"));
+				assertEquals(35, resp.getDataItems()[0].getInt("age"));
 				signal.countDown();
 			}
 			@Override
@@ -349,10 +418,10 @@ public class QueryTestCase extends AndroidTestCase {
 		testQuery.lessThanEqualTo("age", 18);
 		testQuery.fetch(new DataCallback(){
 			@Override
-			public void done(Item[] items){
-				assertEquals(1, items.length);
-				assertEquals("Brian", items[0].getString("firstname"));
-				assertEquals(18, items[0].getInt("age"));
+			public void done(QueryResponse resp){
+				assertEquals(1, resp.getDataItems().length);
+				assertEquals("Brian", resp.getDataItems()[0].getString("firstname"));
+				assertEquals(18, resp.getDataItems()[0].getInt("age"));
 				signal.countDown();
 			}
 			@Override

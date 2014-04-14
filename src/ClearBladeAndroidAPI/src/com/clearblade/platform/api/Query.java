@@ -350,7 +350,7 @@ public class Query {
 	private void fetchSetup(){
 		String queryParam = getFetchURLParameter();
 		RequestProperties headers = new RequestProperties.Builder().method("GET").endPoint("api/v/1/data/" +collectionId+ queryParam).build();
-		System.out.println(headers.getUri());
+		//System.out.println(headers.getUri());
 		request.setHeaders(headers);
 	}
 	
@@ -378,8 +378,10 @@ public class Query {
 		    	param=param+"],";
 		    }
 		}
-		if (param.length()>0) {
+		if (param.length()>1) {
 			param="["+param+"]]";
+		}else{
+			return null;
 		}
 		
 		return param;
@@ -392,7 +394,12 @@ public class Query {
 	public String getFetchURLParameter(){
 		String param = "{";
 		//add filters to url param
-		param += "\"FILTERS\":" + filtersAsJsonString();
+		if(filtersAsJsonString() != null){
+			param += "\"FILTERS\":" + filtersAsJsonString();
+		}else{
+			//no queries specified, so set pagenum as 0 to get all data
+			param += "\"PAGENUM\":" + 0; 
+		}
 		//if defined add page num
 		if(this.pageNum >= 0){
 			param += ",\"PAGENUM\":" + this.pageNum;
@@ -403,7 +410,6 @@ public class Query {
 		}
 		//TODO: if defined add sort
 		param += "}";
-		System.out.println(param);
 		try {
 			param = URLEncoder.encode(param, "UTF-8");
 		} catch (UnsupportedEncodingException e) {

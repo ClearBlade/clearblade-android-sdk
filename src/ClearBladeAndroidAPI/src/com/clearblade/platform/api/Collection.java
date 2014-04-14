@@ -13,10 +13,10 @@ import java.util.Iterator;
  *		collection.fetchAll(new DataCallback(){
  *
  *			@Override
- *			public void done(Item[] items) {
+ *			public void done(QueryResponse resp) {
  *				String msg = "";
- *				for (int i=0;i<items.length;i++){
- *					msg = msg + items[i].toString()+",";
+ *				for (int i=0;i<resp.getDataItems().length;i++){
+ *					msg = msg + resp.getDataItems()[i].toString()+",";
  *				}	
  *			}
  *
@@ -122,8 +122,8 @@ public class Collection implements Iterable<Item>{
 		query.fetch(new DataCallback(){
 
 			@Override
-			public void done(Item[] response) {
-				itemArray = response;
+			public void done(QueryResponse response) {
+				itemArray = response.getDataItems();
 				callback.done(response);
 			}
 
@@ -158,8 +158,8 @@ public class Collection implements Iterable<Item>{
 		query.fetch(new DataCallback(){
 
 			@Override
-			public void done(Item[] response) {
-				itemArray = response;
+			public void done(QueryResponse response) {
+				itemArray = response.getDataItems();
 				callback.done(response);
 			}
 

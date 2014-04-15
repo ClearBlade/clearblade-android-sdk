@@ -14,22 +14,35 @@ import android.test.AndroidTestCase;
 import junit.framework.TestCase;
 
 public class ItemTestCase extends AndroidTestCase {
+	
+	//possible values are "prod", "rtp" (ie. develop), or "staging"
+	private static String test_against = "staging";
+			
+	private static String systemKey, systemSecret, testCollectionID, testItemID;
 
-	//prod
-	//private static String systemKey = "c2c895af0af087bea2e1f2a4fb0b";
-	//private static String systemSecret = "C2C895AF0A98FAE0CEF2A4AF890B";
+	//prod system info
+	private static String prodSK = "c2c895af0af087bea2e1f2a4fb0b";
+	private static String prodSS = "C2C895AF0A98FAE0CEF2A4AF890B";
 	
-	//private static String testCollectionID = "d6ca95af0ad8c7cabfedfcc895b001";
+	private static String prodTestCollID = "d6ca95af0ad8c7cabfedfcc895b001";
 	
-	//private static String testItemID = "2b58c44f-9fdc-11e3-ad92-bc764e0487f9";
+	private static String prodTestItemID = "2b58c44f-9fdc-11e3-ad92-bc764e0487f9";
 	
-	//rtp
-	private static String systemKey = "e6cf96b40ab4868aeba0e48e83b601";
-	private static String systemSecret = "E6CF96B40AB68BA7C39A91FAB95D";
+	//rtp system info
+	private static String rtpSK = "e6cf96b40ab4868aeba0e48e83b601";
+	private static String rtpSS = "E6CF96B40AB68BA7C39A91FAB95D";
 	
-	private static String testCollectionID = "b8c7b6b40a80a28ce6af8deeeeb101";
+	private static String rtpTestCollID = "b8c7b6b40a80a28ce6af8deeeeb101";
 	
-	private static String testItemID = "e549fdb2-c0d3-11e3-9b7f-f0def1a7ff39";
+	private static String rtpTestItemID = "e549fdb2-c0d3-11e3-9b7f-f0def1a7ff39";
+	
+	//staging system info
+	private static String stagingSK = "d894eab40aaaacb29afacb98cec701";
+	private static String stagingSS = "D894EAB40AD6CBEBFFE5D7959BDE01";
+	
+	private static String stagingTestCollID = "a295eab40a8ca4b692bbb88ed3eb01";
+	
+	private static String stagingTestItemID = "3ebb758d-c4ac-11e3-8a6b-1231390222c1";
 
 	private void initClearBladeSDK() throws Throwable{
 		
@@ -45,8 +58,28 @@ public class ItemTestCase extends AndroidTestCase {
 		initOptions.put("email", "android@test.com");
 		initOptions.put("password", "android_test");
 		
-		initOptions.put("platformURL", "https://rtp.clearblade.com");
-		initOptions.put("allowUntrusted", true);
+		if(test_against == "prod"){
+			systemKey = prodSK;
+			systemSecret = prodSS;
+			testCollectionID = prodTestCollID;
+			testItemID = prodTestItemID;
+		}else if(test_against == "rtp"){
+			systemKey = rtpSK;
+			systemSecret = rtpSS;
+			testCollectionID = rtpTestCollID;
+			testItemID = rtpTestItemID;
+			initOptions.put("platformURL", "https://rtp.clearblade.com");
+			initOptions.put("allowUntrusted", true);
+		}else if(test_against == "staging"){
+			systemKey = stagingSK;
+			systemSecret = stagingSS;
+			testCollectionID = stagingTestCollID;
+			testItemID = stagingTestItemID;
+			initOptions.put("platformURL", "https://staging.clearblade.com");
+			initOptions.put("allowUntrusted", true);
+		}else{
+			fail("An invalid test_against value was provided. The values accepted are prod, rtp, or staging");
+		}
 		
 		ClearBlade.initialize(systemKey, systemSecret, initOptions, new InitCallback(){
 

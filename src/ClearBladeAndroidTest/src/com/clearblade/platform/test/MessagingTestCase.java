@@ -17,13 +17,22 @@ import junit.framework.TestCase;
 
 public class MessagingTestCase extends AndroidTestCase {
 	
-	//prod
-	//private static String systemKey = "c2c895af0af087bea2e1f2a4fb0b";
-	//private static String systemSecret = "C2C895AF0A98FAE0CEF2A4AF890B";
+	//possible values are "prod", "rtp" (ie. develop), or "staging"
+	private static String test_against = "staging";
+		
+	private static String systemKey, systemSecret;
 	
-	//rtp
-	private static String systemKey = "e6cf96b40ab4868aeba0e48e83b601";
-	private static String systemSecret = "E6CF96B40AB68BA7C39A91FAB95D";
+	//prod system info
+	private static String prodSK = "c2c895af0af087bea2e1f2a4fb0b";
+	private static String prodSS = "C2C895AF0A98FAE0CEF2A4AF890B";
+	
+	//rtp system info
+	private static String rtpSK = "e6cf96b40ab4868aeba0e48e83b601";
+	private static String rtpSS = "E6CF96B40AB68BA7C39A91FAB95D";
+	
+	//staging system info
+	private static String stagingSK = "d894eab40aaaacb29afacb98cec701";
+	private static String stagingSS = "D894EAB40AD6CBEBFFE5D7959BDE01";
 
 	private void initClearBladeSDK() throws Throwable{
 		
@@ -38,10 +47,27 @@ public class MessagingTestCase extends AndroidTestCase {
 		
 		initOptions.put("email", "android@test.com");
 		initOptions.put("password", "android_test");
-		//rtp
-		initOptions.put("platformURL", "https://rtp.clearblade.com");
-		initOptions.put("allowUntrusted", true);
-		initOptions.put("messagingURL", "tcp://rtp.clearblade.com:1883");
+		
+		//set needed variables based on system testing against
+		if(test_against == "prod"){
+			systemKey = prodSK;
+			systemSecret = prodSS;
+		}else if(test_against == "rtp"){
+			systemKey = rtpSK;
+			systemSecret = rtpSS;
+			initOptions.put("platformURL", "https://rtp.clearblade.com");
+			initOptions.put("messagingURL", "tcp://rtp.clearblade.com:1883");
+			initOptions.put("allowUntrusted", true);
+		}else if(test_against == "staging"){
+			systemKey = stagingSK;
+			systemSecret = stagingSS;
+			initOptions.put("platformURL", "https://staging.clearblade.com");
+			initOptions.put("messagingURL", "tcp://staging.clearblade.com:1883");
+			initOptions.put("allowUntrusted", true);
+		}else{
+			fail("An invalid test_against value was provided. The values accepted are prod, rtp, or staging");
+		}
+		
 		
 		ClearBlade.initialize(systemKey, systemSecret, initOptions, new InitCallback(){
 

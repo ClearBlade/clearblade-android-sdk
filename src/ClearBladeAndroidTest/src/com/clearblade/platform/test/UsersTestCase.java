@@ -17,16 +17,22 @@ import android.test.AndroidTestCase;
 
 public class UsersTestCase extends AndroidTestCase {
 	
-	//prod
-	//private static String systemKeyWithAuth = "c2c895af0af087bea2e1f2a4fb0b";
-	//private static String systemSecretWithAuth = "C2C895AF0A98FAE0CEF2A4AF890B";
+	//possible values are "prod", "rtp" (ie. develop), or "staging"
+	private static String test_against = "staging";
+			
+	private static String systemKeyWithAuth, systemSecretWithAuth;
 	
-	private static String systemKeyWithoutAuth = "e4eab0b10ac0ff85adec80e67c";
-	private static String systemSecretWithoutAuth = "E4EAB0B10AFCA4E6F4BCCEDFF0CB01";
+	//prod system info
+	private static String prodSK = "c2c895af0af087bea2e1f2a4fb0b";
+	private static String prodSS = "C2C895AF0A98FAE0CEF2A4AF890B";
 	
-	//rtp
-	private static String systemKeyWithAuth = "e6cf96b40ab4868aeba0e48e83b601";
-	private static String systemSecretWithAuth = "E6CF96B40AB68BA7C39A91FAB95D";
+	//rtp system info
+	private static String rtpSK = "e6cf96b40ab4868aeba0e48e83b601";
+	private static String rtpSS = "E6CF96B40AB68BA7C39A91FAB95D";
+	
+	//staging system info
+	private static String stagingSK = "d894eab40aaaacb29afacb98cec701";
+	private static String stagingSS = "D894EAB40AD6CBEBFFE5D7959BDE01";
 	
 	
 	public void testExistingUserAuthWithAuthRequiredTrue() throws Throwable{
@@ -42,8 +48,23 @@ public class UsersTestCase extends AndroidTestCase {
 		initOptions.put("email", "android@test.com");
 		initOptions.put("password", "android_test");
 		
-		initOptions.put("platformURL", "https://rtp.clearblade.com");
-		initOptions.put("allowUntrusted", true);
+		//set needed variables based on system testing against
+		if(test_against == "prod"){
+			systemKeyWithAuth = prodSK;
+			systemSecretWithAuth = prodSS;
+		}else if(test_against == "rtp"){
+			systemKeyWithAuth = rtpSK;
+			systemSecretWithAuth = rtpSS;
+			initOptions.put("platformURL", "https://rtp.clearblade.com");
+			initOptions.put("allowUntrusted", true);
+		}else if(test_against == "staging"){
+			systemKeyWithAuth = stagingSK;
+			systemSecretWithAuth = stagingSS;
+			initOptions.put("platformURL", "https://staging.clearblade.com");
+			initOptions.put("allowUntrusted", true);
+		}else{
+			fail("An invalid test_against value was provided. The values accepted are prod, rtp, or staging");
+		}
 		
 		ClearBlade.initialize(systemKeyWithAuth, systemSecretWithAuth, initOptions, new InitCallback(){
 
@@ -96,8 +117,23 @@ public class UsersTestCase extends AndroidTestCase {
 		initOptions.put("password", "android_test");
 		initOptions.put("registerUser", true);
 		
-		initOptions.put("platformURL", "https://rtp.clearblade.com");
-		initOptions.put("allowUntrusted", true);
+		//set needed variables based on system testing against
+		if(test_against == "prod"){
+			systemKeyWithAuth = prodSK;
+			systemSecretWithAuth = prodSS;
+		}else if(test_against == "rtp"){
+			systemKeyWithAuth = rtpSK;
+			systemSecretWithAuth = rtpSS;
+			initOptions.put("platformURL", "https://rtp.clearblade.com");
+			initOptions.put("allowUntrusted", true);
+		}else if(test_against == "staging"){
+			systemKeyWithAuth = stagingSK;
+			systemSecretWithAuth = stagingSS;
+			initOptions.put("platformURL", "https://staging.clearblade.com");
+			initOptions.put("allowUntrusted", true);
+		}else{
+			fail("An invalid test_against value was provided. The values accepted are prod, rtp, or staging");
+		}
 		
 		ClearBlade.initialize(systemKeyWithAuth, systemSecretWithAuth, initOptions, new InitCallback(){
 
@@ -151,8 +187,23 @@ public class UsersTestCase extends AndroidTestCase {
 		initOptions.put("password", "android_test");
 		initOptions.put("registerUser", false);
 		
-		initOptions.put("platformURL", "https://rtp.clearblade.com");
-		initOptions.put("allowUntrusted", true);
+		//set needed variables based on system testing against
+		if(test_against == "prod"){
+			systemKeyWithAuth = prodSK;
+			systemSecretWithAuth = prodSS;
+		}else if(test_against == "rtp"){
+			systemKeyWithAuth = rtpSK;
+			systemSecretWithAuth = rtpSS;
+			initOptions.put("platformURL", "https://rtp.clearblade.com");
+			initOptions.put("allowUntrusted", true);
+		}else if(test_against == "staging"){
+			systemKeyWithAuth = stagingSK;
+			systemSecretWithAuth = stagingSS;
+			initOptions.put("platformURL", "https://staging.clearblade.com");
+			initOptions.put("allowUntrusted", true);
+		}else{
+			fail("An invalid test_against value was provided. The values accepted are prod, rtp, or staging");
+		}
 		
 		ClearBlade.initialize(systemKeyWithAuth, systemSecretWithAuth, initOptions, new InitCallback(){
 
@@ -186,6 +237,24 @@ public class UsersTestCase extends AndroidTestCase {
 		initOptions.put("password", "android_test");
 		initOptions.put("registerUser", true);
 		
+		//set needed variables based on system testing against
+		if(test_against == "prod"){
+			systemKeyWithAuth = prodSK;
+			systemSecretWithAuth = prodSS;
+		}else if(test_against == "rtp"){
+			systemKeyWithAuth = rtpSK;
+			systemSecretWithAuth = rtpSS;
+			initOptions.put("platformURL", "https://rtp.clearblade.com");
+			initOptions.put("allowUntrusted", true);
+		}else if(test_against == "staging"){
+			systemKeyWithAuth = stagingSK;
+			systemSecretWithAuth = stagingSS;
+			initOptions.put("platformURL", "https://staging.clearblade.com");
+			initOptions.put("allowUntrusted", true);
+		}else{
+			fail("An invalid test_against value was provided. The values accepted are prod, rtp, or staging");
+		}
+		
 		ClearBlade.initialize(systemKeyWithAuth, systemSecretWithAuth, initOptions, new InitCallback(){
 
 			@Override
@@ -218,6 +287,24 @@ public class UsersTestCase extends AndroidTestCase {
 		initOptions.put("email", "android@test.com");
 		initOptions.put("password", "bad_password");
 		
+		//set needed variables based on system testing against
+		if(test_against == "prod"){
+			systemKeyWithAuth = prodSK;
+			systemSecretWithAuth = prodSS;
+		}else if(test_against == "rtp"){
+			systemKeyWithAuth = rtpSK;
+			systemSecretWithAuth = rtpSS;
+			initOptions.put("platformURL", "https://rtp.clearblade.com");
+			initOptions.put("allowUntrusted", true);
+		}else if(test_against == "staging"){
+			systemKeyWithAuth = stagingSK;
+			systemSecretWithAuth = stagingSS;
+			initOptions.put("platformURL", "https://staging.clearblade.com");
+			initOptions.put("allowUntrusted", true);
+		}else{
+			fail("An invalid test_against value was provided. The values accepted are prod, rtp, or staging");
+		}
+		
 		ClearBlade.initialize(systemKeyWithAuth, systemSecretWithAuth, initOptions, new InitCallback(){
 
 			@Override
@@ -237,145 +324,4 @@ public class UsersTestCase extends AndroidTestCase {
 		
 	}
 	
-	//all functions below are temp removed until backend denies user auth requests 
-	// when auth required is false
-	/*	
-	public void testExistingUserAuthWithAuthRequiredFalse() throws Throwable{
-		
-		//make sure auth token isn't lingering from other init tests
-		if(ClearBlade.getCurrentUser() != null){
-			ClearBlade.getCurrentUser().setAuthToken(null);
-		}
-		
-		final CountDownLatch signal = new CountDownLatch(1);
-		
-		HashMap<String,Object> initOptions = new HashMap<String,Object>();
-		
-		initOptions.put("email", "android@test.com");
-		initOptions.put("password", "android_test");
-		
-		ClearBlade.initialize(systemKeyWithoutAuth, systemSecretWithoutAuth, initOptions, new InitCallback(){
-
-			@Override
-			public void done(boolean results) {
-				fail("Able to authenticate with a registered user with auth required set to false");
-				signal.countDown();
-			}
-			@Override
-			public void error(ClearBladeException e){
-				assertNull(ClearBlade.getCurrentUser().getAuthToken());
-				signal.countDown();
-			}
-			
-		});
-		
-		signal.await();
-	
-	}
-	 
-	public void testUnregUserAuthWithAuthRequiredFalse() throws Throwable{
-		
-		//make sure auth token isn't lingering from other init tests
-		if(ClearBlade.getCurrentUser() != null){
-			ClearBlade.getCurrentUser().setAuthToken(null);
-		}
-		
-		final CountDownLatch signal = new CountDownLatch(1);
-		
-		HashMap<String,Object> initOptions = new HashMap<String,Object>();
-		
-		initOptions.put("email", "fake_user@test.com");
-		initOptions.put("password", "android_test");
-		
-		ClearBlade.initialize(systemKeyWithoutAuth, systemSecretWithoutAuth, initOptions, new InitCallback(){
-
-			@Override
-			public void done(boolean results) {
-				fail("Able to authenticate with an unregistered user with auth required set to false");
-				signal.countDown();
-			}
-			@Override
-			public void error(ClearBladeException e){
-				assertNull(ClearBlade.getCurrentUser().getAuthToken());
-				signal.countDown();
-			}
-			
-		});
-		
-		signal.await();
-	
-	}
-	
-	public void testUserAuthBadPasswordWithAuthRequiredFalse() throws Throwable{
-		
-		//make sure auth token isn't lingering from other init tests
-		if(ClearBlade.getCurrentUser() != null){
-			ClearBlade.getCurrentUser().setAuthToken(null);
-		}
-		
-		final CountDownLatch signal = new CountDownLatch(1);
-		
-		HashMap<String,Object> initOptions = new HashMap<String,Object>();
-		
-		initOptions.put("email", "android@test.com");
-		initOptions.put("password", "bad_password");
-		
-		ClearBlade.initialize(systemKeyWithoutAuth, systemSecretWithoutAuth, initOptions, new InitCallback(){
-
-			@Override
-			public void done(boolean results) {
-				fail("Able to authenticate with a user with invalid password and auth required set to false");
-				signal.countDown();
-			}
-			@Override
-			public void error(ClearBladeException e){
-				assertNull(ClearBlade.getCurrentUser().getAuthToken());
-				signal.countDown();
-			}
-			
-		});
-		
-		signal.await();
-	
-	}
-	
-	public void testNewUserRegWithAuthRequiredFalse() throws Throwable{
-		
-		//make sure auth token isn't lingering from other init tests
-		if(ClearBlade.getCurrentUser() != null){
-			ClearBlade.getCurrentUser().setAuthToken(null);
-		}
-		
-		final CountDownLatch signal = new CountDownLatch(1);
-		
-		Random rand = new Random();
-		Integer randomNum = rand.nextInt(1000000);
-		
-		String email = "test_" + randomNum.toString() + "@test.com";
-		
-		HashMap<String,Object> initOptions = new HashMap<String,Object>();
-		
-		initOptions.put("email", email);
-		initOptions.put("password", "android_test");
-		initOptions.put("registerUser", true);
-		
-		ClearBlade.initialize(systemKeyWithoutAuth, systemSecretWithoutAuth, initOptions, new InitCallback(){
-
-			@Override
-			public void done(boolean results) {
-				fail("Able to register and authenticate with a user with auth required set to false");
-				signal.countDown();
-			}
-			@Override
-			public void error(ClearBladeException e){
-				assertNull(ClearBlade.getCurrentUser().getAuthToken());
-				signal.countDown();
-			}
-			
-		});
-		
-		signal.await();
-	
-	}
-	*/
 }

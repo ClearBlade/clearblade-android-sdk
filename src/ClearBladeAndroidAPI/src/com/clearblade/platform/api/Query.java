@@ -30,10 +30,10 @@ import com.google.gson.JsonParser;
  *		query.fetch(new DataCallback(){
  *
  *			@Override
- *			public void done(Item[] items) {
+ *			public void done(QueryResponse resp) {
  *				String msg = "";
- *				for (int i=0;i<items.length;i++){
- *					msg = msg + items[i].toString()+",";
+ *				for (int i=0;i<resp.getDataItems().length;i++){
+ *					msg = msg + resp.getDataItems()[i].toString()+",";
  *				}	
  *			}
  *
@@ -85,7 +85,7 @@ public class Query {
 	 * Query query = new Query(collectionId);
 	 * query.equalTo('name', 'John');
 	 * query.fetch(new DataCallback{
-	 * 	  public void done(Item[] items){
+	 * 	  public void done(QueryResponse resp){
 	 *       //your logic here
 	 *    }
 	 * });
@@ -110,7 +110,7 @@ public class Query {
 	 * Query query = new Query(collectionId);
 	 * query.notEqualTo('name', 'John');
 	 * query.fetch(new DataCallback{
-	 * 	  public void done(Item[] items){
+	 * 	  public void done(QueryResponse resp){
 	 *       //your logic here
 	 *    }
 	 * });
@@ -135,7 +135,7 @@ public class Query {
 	 * Query query = new Query(collectionId);
 	 * query.greaterThan('age', '18');
 	 * query.fetch(new DataCallback{
-	 * 	  public void done(Item[] items){
+	 * 	  public void done(QueryResponse resp){
 	 *       //your logic here
 	 *    }
 	 * });
@@ -159,7 +159,7 @@ public class Query {
 	 * Query query = new Query(collectionId);
 	 * query.greaterThanEqualTo('age', '18');
 	 * query.fetch(new DataCallback{
-	 * 	  public void done(Item[] items){
+	 * 	  public void done(QueryResponse resp){
 	 *       //your logic here
 	 *    }
 	 * });
@@ -183,7 +183,7 @@ public class Query {
 	 * Query query = new Query(collectionId);
 	 * query.lessThan('age', '18');
 	 * query.fetch(new DataCallback{
-	 * 	  public void done(Item[] items){
+	 * 	  public void done(QueryResponse resp){
 	 *       //your logic here
 	 *    }
 	 * });
@@ -207,7 +207,7 @@ public class Query {
 	 * Query query = new Query(collectionId);
 	 * query.lessThanEqualTo('age', '18');
 	 * query.fetch(new DataCallback{
-	 * 	  public void done(Item[] items){
+	 * 	  public void done(QueryResponse resp){
 	 *       //your logic here
 	 *    }
 	 * });
@@ -231,7 +231,7 @@ public class Query {
 	 * Query query = new Query(collectionId);
 	 * query.ascending('age');
 	 * query.fetch(new DataCallback{
-	 * 	  public void done(Item[] items){
+	 * 	  public void done(QueryResponse resp){
 	 *       //your logic here
 	 *    }
 	 * });
@@ -248,7 +248,7 @@ public class Query {
 	 * Query query = new Query(collectionId);
 	 * query.descending('age');
 	 * query.fetch(new DataCallback{
-	 * 	  public void done(Item[] items){
+	 * 	  public void done(QueryResponse resp){
 	 *       //your logic here
 	 *    }
 	 * });
@@ -265,12 +265,12 @@ public class Query {
 	}
 	
 	/**
-	 * Creates an limit in the query object on the total number of results
+	 * Sets the desired page size returned by server for the query results
 	 * <pre>
 	 * Query query = new Query(collectionId);
-	 * query.limit(50);
+	 * query.setPageSize(50);
 	 * query.fetch(new DataCallback{
-	 * 	  public void done(Item[] items){
+	 * 	  public void done(QueryResponse resp){
 	 *       //your logic here
 	 *    }
 	 * });
@@ -282,12 +282,12 @@ public class Query {
 	}
 	
 	/**
-	 * Creates an offset in the query object on position to show return results
+	 * Sets the page number of the query results to be returned by the server
 	 * <pre>
 	 * Query query = new Query(collectionId);
-	 * query.offset(75);
+	 * query.setPageNum(2);
 	 * query.fetch(new DataCallback{
-	 * 	  public void done(Item[] items){
+	 * 	  public void done(QueryResponse resp){
 	 *       //your logic here
 	 *    }
 	 * });
@@ -299,17 +299,21 @@ public class Query {
 	}
 	
 	/**
-	 * Creates an offset in the query object on position to show return results
+	 * Executes the query built by the Query Class. Will return a QueryResponse object
+	 * which contains an array of the Items, and pagination information
 	 * <pre>
 	 * Query query = new Query(collectionId);
 	 * query.offset(75);
 	 * query.fetch(new DataCallback{
-	 * 	  public void done(Item[] items){
+	 * 	  public void done(QueryResponse resp){
 	 *       //your logic here
+	 *    }
+	 *	  public void error(ClearBladeException exception){
+	 *		 //error handling
 	 *    }
 	 * });
 	 * </pre>
-	 * @param field - name of the column to be used for sorting in descending manner
+	 * @param callback - a DataCallback to be called upon success/failure of the query. 
 	 */
 	public void fetch(final DataCallback callback) {
 		fetchSetup();

@@ -28,8 +28,8 @@ public class InitTestCase extends AndroidTestCase {
 	private static String rtpSS = "E6CF96B40AB68BA7C39A91FAB95D";
 	
 	//staging system info
-	private static String stagingSK = "d894eab40aaaacb29afacb98cec701";
-	private static String stagingSS = "D894EAB40AD6CBEBFFE5D7959BDE01";
+	private static String stagingSK = "c0a8c2ba0aac91f3d0a79fb9c5ea01";
+	private static String stagingSS = "C0A8C2BA0AA8A38ABEDABFB0E365";
 	
 	
 	public void testAnonymousInitWithAuthRequired() throws Throwable{

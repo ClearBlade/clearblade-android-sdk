@@ -31,8 +31,8 @@ public class MessagingTestCase extends AndroidTestCase {
 	private static String rtpSS = "E6CF96B40AB68BA7C39A91FAB95D";
 	
 	//staging system info
-	private static String stagingSK = "d894eab40aaaacb29afacb98cec701";
-	private static String stagingSS = "D894EAB40AD6CBEBFFE5D7959BDE01";
+	private static String stagingSK = "c0a8c2ba0aac91f3d0a79fb9c5ea01";
+	private static String stagingSS = "C0A8C2BA0AA8A38ABEDABFB0E365";
 
 	private void initClearBladeSDK() throws Throwable{
 		
@@ -62,7 +62,7 @@ public class MessagingTestCase extends AndroidTestCase {
 			systemKey = stagingSK;
 			systemSecret = stagingSS;
 			initOptions.put("platformURL", "https://staging.clearblade.com");
-			initOptions.put("messagingURL", "tcp://staging.clearblade.com:1883");
+			initOptions.put("messagingURL", "tcp://ec2-54-82-138-91.compute-1.amazonaws.com:1883");
 			initOptions.put("allowUntrusted", true);
 		}else{
 			fail("An invalid test_against value was provided. The values accepted are prod, rtp, or staging");

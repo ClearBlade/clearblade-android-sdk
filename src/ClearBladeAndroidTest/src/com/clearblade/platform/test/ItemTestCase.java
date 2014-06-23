@@ -37,12 +37,12 @@ public class ItemTestCase extends AndroidTestCase {
 	private static String rtpTestItemID = "e549fdb2-c0d3-11e3-9b7f-f0def1a7ff39";
 	
 	//staging system info
-	private static String stagingSK = "d894eab40aaaacb29afacb98cec701";
-	private static String stagingSS = "D894EAB40AD6CBEBFFE5D7959BDE01";
+	private static String stagingSK = "c0a8c2ba0aac91f3d0a79fb9c5ea01";
+	private static String stagingSS = "C0A8C2BA0AA8A38ABEDABFB0E365";
 	
-	private static String stagingTestCollID = "a295eab40a8ca4b692bbb88ed3eb01";
+	private static String stagingTestCollID = "f0aac2ba0aecb8dde0c1e9d2f3a701";
 	
-	private static String stagingTestItemID = "3ebb758d-c4ac-11e3-8a6b-1231390222c1";
+	private static String stagingTestItemID = "ea63f8ba-faec-11e3-ac9a-22000b298817";
 
 	private void initClearBladeSDK() throws Throwable{
 		

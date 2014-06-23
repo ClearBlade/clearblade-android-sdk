@@ -27,7 +27,7 @@ public class CollectionTestCase extends AndroidTestCase {
 	private static String prodSK = "c2c895af0af087bea2e1f2a4fb0b";
 	private static String prodSS = "C2C895AF0A98FAE0CEF2A4AF890B";
 	
-	private static String prodCollID = "";
+	private static String prodCollID = "f8a0f1b00a90c9969eadd695d21d";
 	
 	//rtp system info
 	private static String rtpSK = "e6cf96b40ab4868aeba0e48e83b601";
@@ -36,10 +36,10 @@ public class CollectionTestCase extends AndroidTestCase {
 	private static String rtpCollID = "c8d796b40adcbefc9ecfb2ebaf05";
 	
 	//staging system info
-	private static String stagingSK = "d894eab40aaaacb29afacb98cec701";
-	private static String stagingSS = "D894EAB40AD6CBEBFFE5D7959BDE01";
+	private static String stagingSK = "c0a8c2ba0aac91f3d0a79fb9c5ea01";
+	private static String stagingSS = "C0A8C2BA0AA8A38ABEDABFB0E365";
 	
-	private static String stagingCollID = "b495eab40acaa7f197c3d292e461";
+	private static String stagingCollID = "f4a9c2ba0af889bde6cfaf868a10";
 
 	private void initClearBladeSDK() throws Throwable{
 		

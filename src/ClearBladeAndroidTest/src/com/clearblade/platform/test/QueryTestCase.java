@@ -36,10 +36,10 @@ public class QueryTestCase extends AndroidTestCase {
 	private static String rtpQueryCollID = "c8d796b40adcbefc9ecfb2ebaf05";
 	
 	//staging system info
-	private static String stagingSK = "d894eab40aaaacb29afacb98cec701";
-	private static String stagingSS = "D894EAB40AD6CBEBFFE5D7959BDE01";
+	private static String stagingSK = "c0a8c2ba0aac91f3d0a79fb9c5ea01";
+	private static String stagingSS = "C0A8C2BA0AA8A38ABEDABFB0E365";
 	
-	private static String stagingQueryCollID = "b495eab40acaa7f197c3d292e461";
+	private static String stagingQueryCollID = "f4a9c2ba0af889bde6cfaf868a10";
 	
 	
 	private void initClearBladeSDK() throws Throwable{
@@ -55,6 +55,7 @@ public class QueryTestCase extends AndroidTestCase {
 		
 		initOptions.put("email", "android@test.com");
 		initOptions.put("password", "android_test");
+		initOptions.put("setLogging",true);
 		
 		//set needed variables based on system testing against
 		if(test_against == "prod"){
@@ -202,8 +203,8 @@ public class QueryTestCase extends AndroidTestCase {
 		
 	}
 	
-	//not supported currently, temp removed
-	
+	//NEQ not to be trusted currently, temp removed until we get off cassandra
+	/*
 	public void testQueryNotEqualToString() throws Throwable{
 		
 		initClearBladeSDK();
@@ -253,7 +254,7 @@ public class QueryTestCase extends AndroidTestCase {
 		signal.await();
 		
 	}
-	
+	*/
 	public void testQueryGreaterThanString() throws Throwable{
 		
 		initClearBladeSDK();

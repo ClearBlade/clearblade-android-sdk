@@ -16,7 +16,7 @@ import junit.framework.TestCase;
 public class ItemTestCase extends AndroidTestCase {
 	
 	//possible values are "prod", "rtp" (ie. develop), or "staging"
-	private static String test_against = "staging";
+	private static String test_against = "prod";
 			
 	private static String systemKey, systemSecret, testCollectionID, testItemID;
 

@@ -69,9 +69,9 @@ public class Item {
 	public Item(String collectionId) {
 		this.json = new JsonObject();
 		this.collectionId = collectionId;
-		long _created = new Date().getTime();
-		this.json.addProperty("_created", _created);
-		this.json.addProperty("_lastModified", _created);
+		//long _created = new Date().getTime();
+		//this.json.addProperty("_created", _created);
+		//this.json.addProperty("_lastModified", _created);
 		this.changes = new JsonObject();
 		this.request = new RequestEngine();
 	}
@@ -94,17 +94,17 @@ public class Item {
 
 		this.json = convertJsonToJsonObject(json);
 		this.collectionId = collectionId;
-		JsonElement itemId = this.json.get("itemId");
+		JsonElement itemId = this.json.get("item_id");
 		JsonElement created = this.json.get("_created");
 
 		if(itemId == null){
-			this.json.addProperty("itemId", "");
+			this.json.addProperty("item_id", "");
 		}
 
 		if(created == null){
-			long _created = new Date().getTime();
-			this.json.addProperty("_created", _created);
-			this.json.addProperty("_lastModified", _created);
+			//long _created = new Date().getTime();
+			//this.json.addProperty("_created", _created);
+			//this.json.addProperty("_lastModified", _created);
 		}
 		this.changes = new JsonObject();
 		this.request = new RequestEngine();
@@ -114,18 +114,18 @@ public class Item {
 	protected Item (JsonObject json, String collectionId){
 		this.collectionId = collectionId;
 		this.json = json;
-		JsonElement itemId = this.json.get("itemId");
-		JsonElement created = this.json.get("_created");
+		JsonElement itemId = this.json.get("item_id");
+		//JsonElement created = this.json.get("_created");
 
 		if(itemId == null){
-			this.json.addProperty("itemId", "");
+			this.json.addProperty("item_id", "");
 		}
 
-		if(created == null){
-			long _created = new Date().getTime();
-			this.json.addProperty("_created", _created);
-			this.json.addProperty("_lastModified", _created);
-		}
+		//if(created == null){
+		//	long _created = new Date().getTime();
+		//	this.json.addProperty("_created", _created);
+		//	this.json.addProperty("_lastModified", _created);
+		//}
 		this.changes = new JsonObject();
 		this.request = new RequestEngine();
 	}
@@ -173,6 +173,8 @@ public class Item {
 			return toObject.getAsJsonObject();
 		}catch(JsonSyntaxException mfe){
 			return null;
+		}catch(IllegalStateException ise){
+			return null;
 		}
 	}
 
@@ -183,7 +185,7 @@ public class Item {
 	public void destroy (DataCallback callback)  {
 		
 		Query query= new Query(collectionId);
-		query.equalTo("itemId", this.getString("itemId"));
+		query.equalTo("item_id", this.getString("item_id"));
 		query.remove(callback);
 	}
 
@@ -259,8 +261,8 @@ public class Item {
 	 * @return itemId the Id of the Item
 	 */
 	public String getId() {
-		if(this.hasProperty("itemId")){
-			return this.getString("itemId");
+		if(this.hasProperty("item_id")){
+			return this.getString("item_id");
 		}
 		return null;
 	}
@@ -358,8 +360,8 @@ public class Item {
 	
 	private void loadSetup(String itemId){
 		JsonObject queryString = new JsonObject();
-		queryString.addProperty("itemId", itemId);
-		RequestProperties headers = new RequestProperties.Builder().method("GET").endPoint("api/" + collectionId).qs(queryString).build();
+		queryString.addProperty("item_id", itemId);
+		RequestProperties headers = new RequestProperties.Builder().method("GET").endPoint("api/v/1/data/" + collectionId).qs(queryString).build();
 		request.setHeaders(headers);
 		
 	}
@@ -411,16 +413,16 @@ public class Item {
 	
 	private void saveSetup(){
 		RequestProperties headers = null;
-		if(this.getString("itemId") == null ) {
-			headers = new RequestProperties.Builder().method("POST").endPoint("api/" + collectionId).body(this.json).build();
+		if(this.getString("item_id") == null ) {
+			headers = new RequestProperties.Builder().method("POST").endPoint("api/v/1/data/" + collectionId).body(this.json).build();
 		} else {
 			// Create Payload object
 			JsonObject payload = new JsonObject();
 			payload.addProperty("$set", this.changes.toString());
 			JsonObject query = new JsonObject();
-			query.addProperty("itemId", this.getString("itemId"));
+			query.addProperty("item_id", this.getString("item_id"));
 			payload.addProperty("query", query.toString());
-			headers = new RequestProperties.Builder().method("PUT").endPoint("api/" + collectionId).body(payload).build();
+			headers = new RequestProperties.Builder().method("PUT").endPoint("api/v/1/data/" + collectionId).body(payload).build();
 		}
 
 		request.setHeaders(headers);

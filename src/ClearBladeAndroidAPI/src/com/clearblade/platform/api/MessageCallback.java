@@ -15,4 +15,7 @@ public class MessageCallback {
 	public void done(String topic, byte[] message){
 		//override to get a byte[] message
 	}
+	public void done(String topic, String message, int qos) {
+		
+	}
 }

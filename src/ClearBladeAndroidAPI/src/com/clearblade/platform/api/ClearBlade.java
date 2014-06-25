@@ -1,5 +1,9 @@
 package com.clearblade.platform.api;
 
+import java.util.HashMap;
+
+import android.util.Log;
+
 import com.clearblade.platform.api.internal.Util;
 
 
@@ -11,10 +15,10 @@ import com.clearblade.platform.api.internal.Util;
  *  <li>Provide SDK and API information</li>
  *  <li>Initialize the ClearBlade Library for use</li>
  * </ul>
- * <strong>*You must call initialize(String appKey, String appSecret) or its other variants to initialize the API*</strong>
+ * <strong>*You must call initialize(String systemKey, String systemSecret) or its other variants to initialize the API*</strong>
  * </p>
  *
- * @author  Clyde Byrd III, Aaron Allsbrook
+ * @author  Clyde Byrd III, Aaron Allsbrook, Michael Sprague
  * @since   1.0
  */
 public class ClearBlade {
@@ -25,8 +29,9 @@ public class ClearBlade {
 	private static boolean logging;						    // if the user wants internal logs to show. 
 	private static String masterSecret;					    // App's Admin Password; has access to Everything
 	private static String uri;								// Default URL to send Api requests to
-	private static Object user;								// Current User of the application. Not implemented Yet
-
+	private static String messageUrl;						// Default URL to connect to the message broker with
+	private static User user;								// Current User of the application. Not implemented Yet
+	private static boolean initError = false;
 	private static boolean allowUntrusted=false;			// if the platform has https enabled but no publically signed certificate
 	
 	
@@ -78,7 +83,7 @@ public class ClearBlade {
 	 * Returns the current user of the Application
 	 * @return Current user object
 	 */
-	public static Object getCurrentUser() {
+	public static User getCurrentUser() {
 		return user;
 	}
 	
@@ -105,6 +110,23 @@ public class ClearBlade {
 	public static void setUri(String platformURI){
 		uri = platformURI;
 	}
+	
+	/**
+	 * Sets the url of the message broker that will be used in messaging applications
+	 * Defaults to 'tcp://platform.clearblade.com:1883'
+	 * @param messageURL the string that will be set as the url
+	 */
+	public static void setMessageUrl(String messageURL) {
+		messageUrl = messageURL;
+	}
+	
+	/**
+	 * Gets the url of the message broker that was set upon initialization
+	 * @return URL of message broker
+	 */
+	public static String getMessageUrl() {
+		return messageUrl;
+	}
 
 	/**
 	 * Allows for passing requests to an untrusted server.  This method
@@ -123,62 +145,136 @@ public class ClearBlade {
 	}
 	
 	/**
-	 * Initializes the API for use for the Application that is specified by the given credentials.
+	 * Initializes the API for the given system as an anonymous user. (If the system
+	 * has user authentication required set to true, this will fail - See the initialize
+	 * method mentioned below)
 	 * Must be called prior to any API calls
 	 * Throws IllegalArgumentException if myAppKey or myAppSecret is null 
 	 * @param myAppKey The key used to identify the Application in use
 	 * @param myAppSecret The secret used to verify the Application in use
 	 * throws IllegalArgumentException
 	 */
-	public static void initialize(String myAppKey, String myAppSecret) {
+	public static void initialize(String systemKey, String systemSecret, InitCallback callback) {
 
-		if (myAppKey == null) {
-			throw new IllegalArgumentException("appKey must be a non-empty Strings");
+		if(user != null){
+			user = null;
 		}
-		if(myAppSecret == null) {
-			throw new IllegalArgumentException("appSecret can not be null");
-		}
-
-		Util.setAppKey(myAppKey);
-		Util.setAppSecret(myAppSecret);
-		masterSecret = null;
-		uri =  "https://ec2-23-23-31-115.compute-1.amazonaws.com:8080";
 		
+		if (systemKey == null) {
+			throw new IllegalArgumentException("systemKey must be a non-empty Strings");
+		}
+		if(systemSecret == null) {
+			throw new IllegalArgumentException("systemSecret can not be null");
+		}
+
+		Util.setSystemKey(systemKey);
+		Util.setSystemSecret(systemSecret);
+		masterSecret = null;
+		uri =  "https://platform.clearblade.com";
+		messageUrl = "tcp://messaging.clearblade.com:1883";
 		logging = false;
 		callTimeOut = 30000;
+		
+		user = new User(null);
+		
+		user.authWithAnonUser(callback);
 	}
-
+	
 	/**
-	 * Initializes the API for use for the Application that is specified by the given credentials.
+	 * Initializes API with given system credentials and options.
+	 * Upon Success/Failure, appropriate callback methods are triggered
 	 * Must be called prior to any API calls.
-	 * Throws IllegalArgumentException if myAppKey or myAppSecret is null 
-	 * @param myAppKey The key used to identify the Application in use
-	 * @param myAppSecret The secret used to verify the Application in use
-	 * @param platformUrl The url that the API will use to make Calls
+	 * Available init options:
+	 * 	email - String to register or log-in as specific user (required if password is given) Default - null<br>
+	 * 	password - password String for given user (required if email is given) Default - null<br>
+	 * 	platformURL - Custom URL for the platform Default - https://platform.clearblade.com<br>
+	 * 	messagingURL - Custom Messaging URL Default - tcp://messaging.clearblade.com:1883<br>
+	 * 	registerUser - Boolean to tell if you'd like to attempt registering the given user Default - false<br>
+	 * 	logging - Boolean to enable ClearBlade Internal API logging Default - false<br>
+	 * 	callTimeout - Int number of milliseconds for call timeouts Default - 30000 (30 seconds)<br>
+	 *  allowUntrusted - Boolean to connect to a platform server without a signed SSL certificate Default - false
+	 * Throws IllegalArgumentException if systemKey or systemSecret is null 
+	 * @param systemKey The key used to identify the System in use
+	 * @param systemSecret The secret used to verify the System in use
+	 * @param initOptions HashMap of initialization options
+	 * @param callback InitCallback for when initialization is done (success of failure)
 	 * @throws IllegalArgumentException
 	 */
-	public static void initialize(String myAppKey, String myAppSecret, String platformUrl) {
-
-		
-
-		if (myAppKey == null) {
-			throw new IllegalArgumentException("appKey must be a non-empty Strings");
+	public static void initialize(String systemKey, String systemSecret, HashMap<String,Object> initOptions, InitCallback callback){
+				
+		if (systemKey == null) {
+			throw new IllegalArgumentException("systemKey must be a non-empty Strings");
 		}
 		
-		if(myAppSecret == null) {
-			throw new IllegalArgumentException("appSecret can not be null");
+		if(systemSecret == null) {
+			throw new IllegalArgumentException("systemSecret can not be null");
 		}
 		
-		if(platformUrl == null) {
-			throw new IllegalArgumentException("platformUrl can not be null");
+		//validate options
+		validateOptions(initOptions, callback);
+		
+		Util.setSystemKey(systemKey);
+		Util.setSystemSecret(systemSecret);
+		
+		//init platform url
+		String platURL = (String) initOptions.get("platformURL");
+		if(platURL != null){
+			uri = platURL;
+		}else{
+			uri = "https://platform.clearblade.com";
 		}
-
-		Util.setAppKey(myAppKey);
-		Util.setAppSecret(myAppSecret);
-		masterSecret = null;
-		uri =  platformUrl;
-		logging = false;
-		callTimeOut = 30000;
+		
+		//init messaging url
+		String messURL = (String) initOptions.get("messagingURL");
+		if(messURL != null){
+			messageUrl = messURL;
+		}else{
+			messageUrl = "tcp://messaging.clearblade.com:1883";
+		}
+		
+		//init logging
+		Boolean log = (Boolean) initOptions.get("logging");
+		if(log != null){
+			setLogging(log);
+		}
+		
+		//init call timeout
+		Integer timeout = (Integer) initOptions.get("callTimeout");
+		if(timeout != null && timeout > 0){
+			setCallTimeOut(timeout);
+		}else{
+			setCallTimeOut(30000);
+		}
+		
+		//init registerUser
+		Boolean registerUser = (Boolean) initOptions.get("registerUser");
+		if(registerUser == null){
+			registerUser = false;
+		}
+	
+		//init untrusted
+		Boolean allowUntrusted = (Boolean) initOptions.get("allowUntrusted");
+		if(allowUntrusted != null){
+			setAllowUntrusted(allowUntrusted.booleanValue());
+		}
+		
+		String email = (String) initOptions.get("email");
+		final String password = (String) initOptions.get("password");
+		
+		user = new User(email);
+		
+		if(!initError && email != null && !registerUser.booleanValue()){
+			//no init error, an email was given, and don't register user
+			//just auth with given user info
+			user.authWithCurrentUser(password, callback);
+		}else if(!initError && registerUser.booleanValue()){
+			//no errors, and register new user
+			user.registerUser(password, callback);
+		}else if(!initError && email == null){
+			//email is null, so try to auth as anon user
+			user.authWithAnonUser(callback);
+		}
+		
 	}
 
 	/**
@@ -218,6 +314,30 @@ public class ClearBlade {
 	 */
 	public static void setMasterSecret(String myMasterSecret) {
 		masterSecret = myMasterSecret;
-	}	
+	}
+	
+	public static void setInitError(boolean value){
+		initError = value;
+	}
+	
+	private static void validateOptions(HashMap<String, Object> options,
+			InitCallback callback) {
+		initError = false;
+		
+		String email = (String) options.get("email");
+		String password = (String) options.get("password");
+		Boolean shouldRegister = (Boolean) options.get("registerUser");
+		if(email == null && password != null){
+			initError = true;
+			callback.error(new ClearBladeException("Must provide both an email and password to authenticate. You only provided a password"));
+		}else if(email != null && password == null){
+			initError = true;
+			callback.error(new ClearBladeException("Must provide both an email and password to authenticate. You only provided an email"));
+		}else if(shouldRegister != null && shouldRegister.booleanValue() && email == null){
+			initError = true;
+			callback.error(new ClearBladeException("Cannot register anonymous user"));
+		}
+		
+	}
 }
 

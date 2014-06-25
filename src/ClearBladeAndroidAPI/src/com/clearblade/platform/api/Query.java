@@ -3,13 +3,16 @@ package com.clearblade.platform.api;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import com.clearblade.platform.api.internal.DataTask;
 import com.clearblade.platform.api.internal.PlatformCallback;
 import com.clearblade.platform.api.internal.PlatformResponse;
 import com.clearblade.platform.api.internal.RequestEngine;
 import com.clearblade.platform.api.internal.RequestProperties;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -27,10 +30,10 @@ import com.google.gson.JsonParser;
  *		query.fetch(new DataCallback(){
  *
  *			@Override
- *			public void done(Item[] items) {
+ *			public void done(QueryResponse resp) {
  *				String msg = "";
- *				for (int i=0;i<items.length;i++){
- *					msg = msg + items[i].toString()+",";
+ *				for (int i=0;i<resp.getDataItems().length;i++){
+ *					msg = msg + resp.getDataItems()[i].toString()+",";
  *				}	
  *			}
  *
@@ -54,8 +57,8 @@ public class Query {
 	private String collectionId;
 	private QueryObj queryObj = new QueryObj();
 	private ArrayList<QueryObj> queryObjs = new ArrayList<QueryObj>();
-	private int limit;
-	private int offset;
+	private int pageSize = -1;
+	private int pageNum = -1;
 	
 	private RequestEngine request;	// used to make API requests
 
@@ -82,7 +85,7 @@ public class Query {
 	 * Query query = new Query(collectionId);
 	 * query.equalTo('name', 'John');
 	 * query.fetch(new DataCallback{
-	 * 	  public void done(Item[] items){
+	 * 	  public void done(QueryResponse resp){
 	 *       //your logic here
 	 *    }
 	 * });
@@ -92,7 +95,7 @@ public class Query {
 	 * @param value - the value of the search criteria
 	 * @return modified Query object for chaining purposes.
 	 */
-	public Query equalTo(String field, String value) {
+	public Query equalTo(String field, Object value) {
 		FieldValue fv = new FieldValue(field, value);
 		if (queryObj.EQ==null){
 			queryObj.EQ = new ArrayList<FieldValue>();
@@ -107,7 +110,7 @@ public class Query {
 	 * Query query = new Query(collectionId);
 	 * query.notEqualTo('name', 'John');
 	 * query.fetch(new DataCallback{
-	 * 	  public void done(Item[] items){
+	 * 	  public void done(QueryResponse resp){
 	 *       //your logic here
 	 *    }
 	 * });
@@ -117,7 +120,7 @@ public class Query {
 	 * @param value - the value of the search criteria
 	 * @return modified Query object for chaining purposes.
 	 */
-	public Query notEqual(String field, String value) {
+	public Query notEqual(String field, Object value) {
 		FieldValue fv = new FieldValue(field, value);
 		if (queryObj.NEQ==null){
 			queryObj.NEQ = new ArrayList<FieldValue>();
@@ -132,7 +135,7 @@ public class Query {
 	 * Query query = new Query(collectionId);
 	 * query.greaterThan('age', '18');
 	 * query.fetch(new DataCallback{
-	 * 	  public void done(Item[] items){
+	 * 	  public void done(QueryResponse resp){
 	 *       //your logic here
 	 *    }
 	 * });
@@ -141,7 +144,7 @@ public class Query {
 	 * @param value - the value of the search criteria
 	 * @return modified Query object for chaining purposes.
 	 */
-	public Query greaterThan(String field, String value) {
+	public Query greaterThan(String field, Object value) {
 		FieldValue fv = new FieldValue(field, value);
 		if (queryObj.GT==null){
 			queryObj.GT = new ArrayList<FieldValue>();
@@ -156,7 +159,7 @@ public class Query {
 	 * Query query = new Query(collectionId);
 	 * query.greaterThanEqualTo('age', '18');
 	 * query.fetch(new DataCallback{
-	 * 	  public void done(Item[] items){
+	 * 	  public void done(QueryResponse resp){
 	 *       //your logic here
 	 *    }
 	 * });
@@ -165,7 +168,7 @@ public class Query {
 	 * @param value - the value of the search criteria
 	 * @return modified Query object for chaining purposes.
 	 */
-	public Query greaterThanEqualTo(String field, String value){
+	public Query greaterThanEqualTo(String field, Object value){
 		FieldValue fv = new FieldValue(field, value);
 		if (queryObj.GTE==null){
 			queryObj.GTE = new ArrayList<FieldValue>();
@@ -180,7 +183,7 @@ public class Query {
 	 * Query query = new Query(collectionId);
 	 * query.lessThan('age', '18');
 	 * query.fetch(new DataCallback{
-	 * 	  public void done(Item[] items){
+	 * 	  public void done(QueryResponse resp){
 	 *       //your logic here
 	 *    }
 	 * });
@@ -189,7 +192,7 @@ public class Query {
 	 * @param value - the value of the search criteria
 	 * @return modified Query object for chaining purposes.
 	 */
-	public Query lessThan(String field, String value) {
+	public Query lessThan(String field, Object value) {
 		FieldValue fv = new FieldValue(field, value);
 		if (queryObj.LT==null){
 			queryObj.LT = new ArrayList<FieldValue>();
@@ -204,7 +207,7 @@ public class Query {
 	 * Query query = new Query(collectionId);
 	 * query.lessThanEqualTo('age', '18');
 	 * query.fetch(new DataCallback{
-	 * 	  public void done(Item[] items){
+	 * 	  public void done(QueryResponse resp){
 	 *       //your logic here
 	 *    }
 	 * });
@@ -213,7 +216,7 @@ public class Query {
 	 * @param value - the value of the search criteria
 	 * @return modified Query object for chaining purposes.
 	 */
-	public Query lessThanEqualTo(String field, String value){
+	public Query lessThanEqualTo(String field, Object value){
 		FieldValue fv = new FieldValue(field, value);
 		if (queryObj.LTE==null){
 			queryObj.LTE = new ArrayList<FieldValue>();
@@ -228,7 +231,7 @@ public class Query {
 	 * Query query = new Query(collectionId);
 	 * query.ascending('age');
 	 * query.fetch(new DataCallback{
-	 * 	  public void done(Item[] items){
+	 * 	  public void done(QueryResponse resp){
 	 *       //your logic here
 	 *    }
 	 * });
@@ -245,7 +248,7 @@ public class Query {
 	 * Query query = new Query(collectionId);
 	 * query.descending('age');
 	 * query.fetch(new DataCallback{
-	 * 	  public void done(Item[] items){
+	 * 	  public void done(QueryResponse resp){
 	 *       //your logic here
 	 *    }
 	 * });
@@ -257,56 +260,60 @@ public class Query {
 	}
 	
 	public void or(Query orQuery){
-		queryObjs.add(queryObj);
-		queryObj = orQuery.queryObj;
+		queryObjs.add(orQuery.queryObj);
+		//queryObj = orQuery.queryObj;
 	}
 	
 	/**
-	 * Creates an limit in the query object on the total number of results
+	 * Sets the desired page size returned by server for the query results
 	 * <pre>
 	 * Query query = new Query(collectionId);
-	 * query.limit(50);
+	 * query.setPageSize(50);
 	 * query.fetch(new DataCallback{
-	 * 	  public void done(Item[] items){
+	 * 	  public void done(QueryResponse resp){
 	 *       //your logic here
 	 *    }
 	 * });
 	 * </pre>
 	 * @param field - name of the column to be used for sorting in descending manner
 	 */
-	public void setLimit(int limit){
-		this.limit = limit;
+	public void setPageSize(int pageSize){
+		this.pageSize = pageSize;
 	}
 	
 	/**
-	 * Creates an offset in the query object on position to show return results
+	 * Sets the page number of the query results to be returned by the server
 	 * <pre>
 	 * Query query = new Query(collectionId);
-	 * query.offset(75);
+	 * query.setPageNum(2);
 	 * query.fetch(new DataCallback{
-	 * 	  public void done(Item[] items){
+	 * 	  public void done(QueryResponse resp){
 	 *       //your logic here
 	 *    }
 	 * });
 	 * </pre>
 	 * @param field - name of the column to be used for sorting in descending manner
 	 */
-	public void setOffset(int offset) {
-		this.offset = offset;
+	public void setPageNum(int pageNum) {
+		this.pageNum = pageNum;
 	}
 	
 	/**
-	 * Creates an offset in the query object on position to show return results
+	 * Executes the query built by the Query Class. Will return a QueryResponse object
+	 * which contains an array of the Items, and pagination information
 	 * <pre>
 	 * Query query = new Query(collectionId);
 	 * query.offset(75);
 	 * query.fetch(new DataCallback{
-	 * 	  public void done(Item[] items){
+	 * 	  public void done(QueryResponse resp){
 	 *       //your logic here
+	 *    }
+	 *	  public void error(ClearBladeException exception){
+	 *		 //error handling
 	 *    }
 	 * });
 	 * </pre>
-	 * @param field - name of the column to be used for sorting in descending manner
+	 * @param callback - a DataCallback to be called upon success/failure of the query. 
 	 */
 	public void fetch(final DataCallback callback) {
 		fetchSetup();
@@ -314,8 +321,11 @@ public class Query {
 
 			@Override
 			public void done(String response) {
-				Item[] ret = convertJsonArrayToItemArray(response);
-				callback.done(ret);
+				Gson gson = new Gson();
+				QueryResponse resp = gson.fromJson(response, QueryResponse.class);
+				//because item is dynamic, we need to populate the array outside of gson
+				resp.setDataItems(convertJsonArrayToItemArray(resp.getDataJsonAsString()));
+				callback.done(resp);
 			}
 
 			@Override
@@ -342,14 +352,78 @@ public class Query {
 	}
 	
 	private void fetchSetup(){
-		String queryParam = getURLParameter();
-		RequestProperties headers = new RequestProperties.Builder().method("GET").endPoint("api/" +collectionId+ queryParam).build();
+		String queryParam = getFetchURLParameter();
+		RequestProperties headers = new RequestProperties.Builder().method("GET").endPoint("api/v/1/data/" +collectionId+ queryParam).build();
+		//System.out.println(headers.getUri());
 		request.setHeaders(headers);
 	}
 	
 //	public Item[] fetch(){
 //		return null;
 //	}
+	
+	protected String filtersAsJsonString() {
+		ArrayList<QueryObj> temp = queryObjs;
+		if (queryObjs.size()==0) {
+			//we havent done an or, so just build up an array of the queryObj
+			//we can use the queryObjs list becuase the user may continue to build on the Query
+			//for future use
+			temp = new ArrayList<QueryObj>();
+		}
+		temp.add(queryObj);
+		String param = "";//gson.toJson(temp);
+		Iterator<QueryObj> it = temp.iterator();
+		while(it.hasNext())
+		{
+		    QueryObj obj = it.next();
+		    param = param+"["+stringifyQuery(obj);
+		    if (it.hasNext()){
+		    	//there is an or
+		    	param=param+"],";
+		    }
+		}
+		if (param.length()>1) {
+			param="["+param+"]]";
+		}else{
+			return null;
+		}
+		
+		return param;
+	}
+	
+	/**
+	 * Internal only, made public for test and verification.  Returns the query string parameter necessary to implement the fetch query
+	 * @return String
+	 */
+	public String getFetchURLParameter(){
+		String param = "{";
+		//add filters to url param
+		if(filtersAsJsonString() != null){
+			param += "\"FILTERS\":" + filtersAsJsonString();
+		}else{
+			//no queries specified, so set pagenum as 0 to get all data
+			param += "\"PAGENUM\":" + 0; 
+		}
+		//if defined add page num
+		if(this.pageNum >= 0){
+			param += ",\"PAGENUM\":" + this.pageNum;
+		}
+		//if defined add page size
+		if(this.pageSize >= 0){
+			param += ",\"PAGESIZE\":" + this.pageSize;
+		}
+		//TODO: if defined add sort
+		param += "}";
+		try {
+			param = URLEncoder.encode(param, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		if (param.length()>0){
+			param = "?query="+param;
+		}
+		return param;
+	}
 	
 	protected String queryAsJsonString() {
 		ArrayList<QueryObj> temp = queryObjs;
@@ -417,7 +491,12 @@ public class Query {
 		Iterator<FieldValue> iter = params.iterator();
 		while(iter.hasNext()){
 			FieldValue fv = (FieldValue) iter.next();
-			ret = ret + "{\""+fv.field+"\":\""+fv.value+"\"}";
+			Class valueClass = fv.value.getClass();
+			if(valueClass.getName().toLowerCase().equalsIgnoreCase("java.lang.string")){
+				ret = ret + "{\""+fv.field+"\":\""+fv.value+"\"}";
+			}else if(valueClass.getName().toLowerCase().equalsIgnoreCase("java.lang.integer")){
+				ret = ret + "{\""+fv.field+"\":"+Integer.toString((Integer) fv.value)+"}";
+			}
 			if (iter.hasNext()){
 				ret=ret+",";
 			}
@@ -426,7 +505,7 @@ public class Query {
 		return ret;
 	}
 	
-	private JsonObject changes = new JsonObject();
+	private HashMap<String,Object> changes = new HashMap<String,Object>();
 	
 	/**
 	 * Adds a change set to the query.  When update is run all of the changes
@@ -434,8 +513,8 @@ public class Query {
 	 * @param name - the name of the column to be modified
 	 * @param value - the new value to insert into the column
 	 */
-	public void addChange(String name, String value){
-		changes.addProperty(name, value);
+	public void addChange(String name, Object value){
+		changes.put(name, value);
 	}
 	
 	/**
@@ -443,7 +522,7 @@ public class Query {
 	 * is executed.
 	 */
 	public void clearChanges(){
-		changes = new JsonObject();
+		changes = new HashMap<String, Object>();
 	}
 	
 	/**
@@ -483,7 +562,7 @@ public class Query {
 			
 		});
 		asyncFetch.execute(request);
-		changes = new JsonObject();
+		changes = new HashMap<String,Object>();
 	}
 	
 	public Item[] updateSync() throws ClearBladeException{
@@ -500,12 +579,36 @@ public class Query {
 	
 	private void updateSetup(){
 		JsonObject payload = new JsonObject();
-		payload.addProperty("$set", this.changes.toString());
+		payload.addProperty("$set", changeSetMapAsJsonString());
 		//JsonObject query = new JsonObject();
 		JsonElement toObject = new JsonParser().parse(queryAsJsonString());
 		payload.add("query", toObject);
-		RequestProperties headers = new RequestProperties.Builder().method("PUT").endPoint("api/" + collectionId).body(payload).build();
+		RequestProperties headers = new RequestProperties.Builder().method("PUT").endPoint("api/v/1/data/" + collectionId).body(payload).build();
 		request.setHeaders(headers);
+	}
+	
+	private String changeSetMapAsJsonString(){
+		
+		String jsonString = "{";
+		
+		for (Map.Entry<String, Object> entry : changes.entrySet()) {
+		    String key = entry.getKey();
+		    Object value = entry.getValue();
+		    if(value.getClass().getName().equalsIgnoreCase("java.lang.string")){
+		    	jsonString += "\"" + key + "\":" + "\"" + value + "\"";
+		    }else if(value.getClass().getName().equalsIgnoreCase("java.lang.integer")){
+		    	jsonString += "\"" + key + "\":" + value.toString();
+		    }
+		    jsonString += ",";
+		}
+		
+		//remove trailing comma
+		jsonString = jsonString.substring(0, jsonString.length()-1);
+		
+		jsonString += "}";
+		
+		return jsonString;
+		
 	}
 	
 	/**
@@ -530,7 +633,7 @@ public class Query {
 
 		String queryParam = getURLParameter();
 		
-		RequestProperties headers = new RequestProperties.Builder().method("DELETE").endPoint("api/" +collectionId+ queryParam).build();
+		RequestProperties headers = new RequestProperties.Builder().method("DELETE").endPoint("api/v/1/data/" +collectionId+ queryParam).build();
 		request.setHeaders(headers);
 		
 		DataTask asyncFetch = new DataTask(new PlatformCallback(this, callback){
@@ -565,7 +668,7 @@ public class Query {
 	private void removeSetup(){
 		String queryParam = getURLParameter();
 		
-		RequestProperties headers = new RequestProperties.Builder().method("DELETE").endPoint("api/" +collectionId+ queryParam).build();
+		RequestProperties headers = new RequestProperties.Builder().method("DELETE").endPoint("api/v/1/data/" +collectionId+ queryParam).build();
 		request.setHeaders(headers);
 	}
 
@@ -585,9 +688,9 @@ public class Query {
 	
 	private class FieldValue{
 		public String field;
-		public String value;
+		public Object value;
 		
-		public FieldValue(String field, String value){
+		public FieldValue(String field, Object value){
 			this.field = field;
 			this.value = value;
 		}

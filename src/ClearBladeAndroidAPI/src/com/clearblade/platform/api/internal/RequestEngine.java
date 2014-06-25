@@ -152,6 +152,7 @@ public class RequestEngine {
 			String method = this.headers.getMethod();
 			String charset = "UTF-8";
 			URL url = new URL(this.headers.getUri());
+			
 			if (isSSL()){
 				urlConnection = (HttpsURLConnection) url.openConnection();
 				
@@ -159,11 +160,31 @@ public class RequestEngine {
 				urlConnection = (HttpURLConnection) url.openConnection();
 				
 			}
+			
 			urlConnection.setRequestMethod(method);
 			urlConnection.setConnectTimeout(this.headers.getTimeout());
-			urlConnection.setRequestProperty("CLEARBLADE-APPKEY", Util.getAppKey());
-			urlConnection.setRequestProperty("CLEARBLADE-APPSECRET", Util.getAppSecret());
 
+			//things get ugly here. most requests should just need usertoken, but you need key/secret
+			// to get token on the auth request and to register new user. also both token and key/secret 
+			// are needed for logout and auth check requests. so if the url cotains the logout or check 
+			// endpoints, we add all 3, otherwise we add token
+			String reqURL = this.headers.getUri().toLowerCase();
+			boolean isLogoutOrAuthCheck = (reqURL.contains("/user/logout") ||
+											reqURL.contains("/user/checkauth"));
+			boolean isAuthOrReg = (reqURL.contains("/user/auth") ||
+									reqURL.contains("/user/anon") ||
+									reqURL.contains("/user/reg"));
+			String userToken = ClearBlade.getCurrentUser().getAuthToken();
+			if(isLogoutOrAuthCheck){
+				urlConnection.setRequestProperty("CLEARBLADE-SYSTEMKEY", Util.getSystemKey());
+				urlConnection.setRequestProperty("CLEARBLADE-SYSTEMSECRET", Util.getSystemSecret());
+				urlConnection.setRequestProperty("ClearBlade-UserToken", userToken);
+			}else if(isAuthOrReg){
+				urlConnection.setRequestProperty("CLEARBLADE-SYSTEMKEY", Util.getSystemKey());
+				urlConnection.setRequestProperty("CLEARBLADE-SYSTEMSECRET", Util.getSystemSecret());
+			}else if(userToken != null){
+				urlConnection.setRequestProperty("ClearBlade-UserToken", userToken);
+			}
 			urlConnection.setRequestProperty("Accept", "application/json");
 			urlConnection.setRequestProperty("Accept-Charset", charset);
 			
@@ -185,17 +206,21 @@ public class RequestEngine {
 			responseCode = urlConnection.getResponseCode();
 			responseMessage = urlConnection.getResponseMessage();
 
-			InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-			String json = readStream(in);
+			
 			if(responseCode / 100 == 2) {  // If the response code is within 200 range success
+				InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+				String json = readStream(in);
 				result = new PlatformResponse<String>(err, json);
 				Util.logger(TAG,method + " "+ responseCode + ":" + responseMessage, false);
 
 			} else {	// else an Error Occurred 
-
+				String errMessage;
+				InputStream in = new BufferedInputStream(urlConnection.getErrorStream());
+				errMessage = readStream(in);
+				String errResp = responseCode + ":" + responseMessage + ":" + errMessage;
+				Util.logger(TAG,errResp, true);
 				err = true;
-				Util.logger(TAG,responseCode + ":" +responseMessage + "\nServer:" + json, true);
-
+				result = new PlatformResponse<String>(err,errResp);
 			}
 		}catch(Exception e) {
 
@@ -212,6 +237,7 @@ public class RequestEngine {
 				caught = "Exception: ";
 			}
 			err = true;
+			e.printStackTrace();
 			result = new PlatformResponse<String>(err,"RequestEngine Caught " + caught + e.getMessage());
 		}
 		finally {

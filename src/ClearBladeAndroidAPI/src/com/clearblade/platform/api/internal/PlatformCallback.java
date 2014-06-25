@@ -2,15 +2,19 @@ package com.clearblade.platform.api.internal;
 
 import com.clearblade.platform.api.ClearBladeException;
 import com.clearblade.platform.api.Collection;
+import com.clearblade.platform.api.InitCallback;
 import com.clearblade.platform.api.Item;
 import com.clearblade.platform.api.DataCallback;
 import com.clearblade.platform.api.Query;
+import com.clearblade.platform.api.User;
 
 public abstract class PlatformCallback {
 	public Collection _collection;
 	public DataCallback _callback;
+	public InitCallback _initCallback;
 	public Item _item;
 	public Query _query;
+	public User _user;
 	
 	public PlatformCallback(Query query, DataCallback callback){
 		_query = query;
@@ -27,6 +31,12 @@ public abstract class PlatformCallback {
 		_callback = callback;
 	}
 	
+
+	public PlatformCallback(User user, InitCallback callback) {
+		_user = user;
+		_initCallback = callback;
+	}
+
 	public abstract void done(String response);
 	public void error(ClearBladeException exception){
 		

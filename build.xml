@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ClearBlade-Android">
+  <target name="create-avd">
+    <exec executable="android" inputstring="no">
+      <arg value="-s" />
+      <arg value="create" />
+      <arg value="avd" />
+      <arg value="-n" />
+      <arg value="ClearBlade-Android" />
+      <arg value="-t" />
+      <arg value="android-19" />
+      <arg value="-f" />
+    </exec>
+  </target>
+  <target name="start-emulator" depends="create-avd">
+    <exec executable="emulator" spawn="true">
+      <arg value="-avd" />
+      <arg value="ClearBlade-Android" />
+      <arg value="-no-window" />
+    </exec>
+    <echo>Waiting for android to complete boot</echo>
+    <exec executable="adb">
+      <arg value="wait-for-device" />
+    </exec>
+    <echo>ADB Connected. Waiting for boot complete</echo>
+    <exec executable="adb">
+      <arg value="shell" />
+      <arg value='while [ ""`getprop dev.bootcomplete` != "1" ] ; do sleep 10;echo "Waiting"; done' />
+    </exec>
+    <echo>Android completed booting</echo>
+  </target>
+  <target name="kill-emulator">
+    <exec executable="adb">
+      <arg value="emu" />
+      <arg value="kill" />
+    </exec>
+  </target>
+  <target name="test" depends="kill-emulator,start-emulator">
+    <ant dir="src/ClearBladeAndroidTest" target="debug" />
+    <ant dir="src/ClearBladeAndroidTest" target="installt" />
+    <ant dir="src/ClearBladeAndroidTest" target="test" />
+    <antcall target="kill-emulator" />
+  </target>
+</project>

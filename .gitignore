@@ -1,5 +1,9 @@
 *.class
 src/ClearBladeAndroidAPI/bin/*
 src/ClearBladeAndroidTest/bin/*
-
-
+gen/
+.*.swp
+local.properties
+.classpath
+.DS_Store
+!src/ClearBladeAndroidAPI/bin/clearbladeandroidapi.jar

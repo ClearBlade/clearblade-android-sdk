@@ -36,7 +36,7 @@ public class Util {
 		}
 	}
 	
-	protected static String getSystemKey() {
+	public static String getSystemKey() {
 		return systemKey;
 	}
 

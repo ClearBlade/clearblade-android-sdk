@@ -1,6 +1,4 @@
 language: android
-before_install:
-  - android list targets
 android:
   components:
     - build-tools-19.0.3

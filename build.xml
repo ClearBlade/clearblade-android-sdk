@@ -10,6 +10,8 @@
       <arg value="-t" />
       <arg value="android-19" />
       <arg value="-f" />
+      <arg value="-b" />
+      <arg value="default/armeabi-v7a" />
     </exec>
   </target>
   <target name="start-emulator" depends="create-avd">

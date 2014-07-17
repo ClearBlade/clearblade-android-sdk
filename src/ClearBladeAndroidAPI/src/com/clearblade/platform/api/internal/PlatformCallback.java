@@ -40,6 +40,11 @@ public abstract class PlatformCallback {
 		_user = user;
 		_initCallback = callback;
 	}
+
+	public PlatformCallback(User user, DataCallback callback) {
+		_user = user;
+		_callback = callback;
+	}
 	
 	public PlatformCallback(Code code, CodeCallback callback){
 		_code = code;

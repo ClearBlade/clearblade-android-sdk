@@ -8,12 +8,12 @@ import com.clearblade.platform.api.ClearBlade;
 import com.clearblade.platform.api.ClearBladeException;
 import com.clearblade.platform.api.DataCallback;
 import com.clearblade.platform.api.InitCallback;
-import com.clearblade.platform.api.Item;
+import com.clearblade.platform.api.User;
 import com.clearblade.platform.api.Query;
 
-import junit.framework.TestCase;
-import android.test.AndroidTestCase;
+import com.google.gson.JsonObject;
 
+import android.test.AndroidTestCase;
 
 public class UsersTestCase extends AndroidTestCase {
 	
@@ -323,5 +323,76 @@ public class UsersTestCase extends AndroidTestCase {
 		signal.await();
 		
 	}
-	
+
+	public void testGetAllUsers() throws Throwable {
+		final CountDownLatch signal = new CountDownLatch(1);
+		final CountDownLatch signal2 = new CountDownLatch(1);
+		final CountDownLatch signal3 = new CountDownLatch(1);
+
+		HashMap<String,Object> initOptions = new HashMap<String,Object>();
+		
+		//set needed variables based on system testing against
+		if(test_against == "prod"){
+			systemKeyWithAuth = prodSK;
+			systemSecretWithAuth = prodSS;
+		}else if(test_against == "rtp"){
+			systemKeyWithAuth = rtpSK;
+			systemSecretWithAuth = rtpSS;
+			initOptions.put("platformURL", "https://rtp.clearblade.com");
+			initOptions.put("allowUntrusted", true);
+		}else if(test_against == "staging"){
+			systemKeyWithAuth = stagingSK;
+			systemSecretWithAuth = stagingSS;
+			initOptions.put("platformURL", "https://staging.clearblade.com");
+			initOptions.put("allowUntrusted", true);
+		}else{
+			fail("An invalid test_against value was provided. The values accepted are prod, rtp, or staging");
+		}
+		
+		ClearBlade.initialize(systemKeyWithAuth, systemSecretWithAuth, initOptions, new InitCallback(){
+			@Override
+			public void done(boolean results) {
+				signal.countDown();
+			}
+			@Override
+			public void error(ClearBladeException e){
+				fail("Able to authenticate a user with invalid password");
+				signal.countDown();
+			}			
+			});
+
+		signal.await();
+
+		User userObj = new User(null);
+		userObj.getAllUsers(new DataCallback() {
+				@Override
+				public void done(JsonObject response) {
+					assertNotNull(response);
+					signal2.countDown();
+				}
+				@Override
+				public void error(ClearBladeException e){
+					fail("Failed to get all users: " + e.getMessage());
+					signal2.countDown();
+				}
+		});
+
+		signal2.await();
+		
+		Query userQuery = new Query();
+		userQuery = userQuery.greaterThan("creation_date", 1);
+		userObj.getAllUsers(userQuery, new DataCallback() {
+			@Override
+			public void done(JsonObject response) {
+				assertNotNull(response);
+				signal3.countDown();
+			}
+			@Override
+			public void error(ClearBladeException e){
+				fail("Failed to get all users with a query:" + e.getMessage());
+				signal3.countDown();
+			}
+		});
+		signal3.await();
+	}
 }

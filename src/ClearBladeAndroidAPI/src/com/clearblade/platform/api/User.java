@@ -1,5 +1,6 @@
 package com.clearblade.platform.api;
 
+import com.clearblade.platform.api.Query;
 import com.clearblade.platform.api.internal.PlatformCallback;
 import com.clearblade.platform.api.internal.RequestEngine;
 import com.clearblade.platform.api.internal.RequestProperties;
@@ -167,6 +168,41 @@ public class User {
 		asyncFetch.execute(request);
 
 	}
+
+	public void getAllUsers(final Query query, final DataCallback callback){
+		RequestProperties headers;
+		request = new RequestEngine();
+
+		if (query != null) {
+			String queryParam = query.getFetchURLParameter();
+			headers = new RequestProperties.Builder().method("GET").endPoint("api/v/1/user" + queryParam).build();
+		} else {
+			headers = new RequestProperties.Builder().method("GET").endPoint("api/v/1/user").build();
+		}
+		request.setHeaders(headers);
+
+		UserTask asyncFetch = new UserTask(new PlatformCallback(this, callback){
+				@Override
+				public void done(String response){
+					JsonParser parser = new JsonParser();
+					JsonObject parsedResponse = (JsonObject)parser.parse(response);
+
+					callback.done(parsedResponse);
+				}
+				@Override
+				public void error(ClearBladeException exception){
+					ClearBlade.setInitError(true);
+					callback.error(exception);
+				}
+			});
+
+		asyncFetch.execute(request);
+	}
+
+	public void getAllUsers(final DataCallback callback) {
+		getAllUsers(null, callback);
+	}
+
 	
 	private String getPropertyValueFromJSONString(String property, String json){
 		String value = null;

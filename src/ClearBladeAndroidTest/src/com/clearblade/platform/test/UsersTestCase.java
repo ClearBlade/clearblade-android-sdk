@@ -18,7 +18,7 @@ import android.test.AndroidTestCase;
 public class UsersTestCase extends AndroidTestCase {
 	
 	//possible values are "prod", "rtp" (ie. develop), or "staging"
-	private static String test_against = "rtp";
+	private static String test_against = "prod";
 			
 	private static String systemKeyWithAuth, systemSecretWithAuth;
 	

@@ -1,13 +1,20 @@
 package com.clearblade.platform.api;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.HashSet;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
 import com.clearblade.platform.api.internal.MessageReceiver;
 import com.clearblade.platform.api.internal.MessageService;
-
-import java.util.HashSet;
+import com.clearblade.platform.api.internal.PlatformCallback;
+import com.clearblade.platform.api.internal.RequestEngine;
+import com.clearblade.platform.api.internal.RequestProperties;
+import com.clearblade.platform.api.internal.UserTask;
+import com.clearblade.platform.api.internal.Util;
 
 
 public class Message {
@@ -88,5 +95,42 @@ public class Message {
 	
 	public void destroy(){
 		context.unregisterReceiver(messageReceiver);
+	}
+	
+	public void getHistory(String topic, int count, String lastTime, final MessageCallback callback){
+		RequestEngine request = new RequestEngine();
+		
+		String t = topic;
+		try {
+			t = URLEncoder.encode(topic, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		String endpoint = "api/v/1/message/"+Util.getSystemKey()+"?topic="+t+"&count="+count+"&last="+lastTime;
+		RequestProperties headers = new RequestProperties.Builder().method("GET").endPoint(endpoint).build();
+		request.setHeaders(headers);
+		final History history = new History();
+		
+		UserTask asyncFetch = new UserTask(new PlatformCallback(history, callback){
+			@Override
+			public void done(String response){
+				//authToken = getPropertyValueFromJSONString("user_token", response);
+				//callback.done(true);
+				try {
+					history.loadHistoryJSON(response);
+				} catch (ClearBladeException e) {
+					e.printStackTrace();
+				}
+				//System.out.println("what the heck is happening");
+				callback.done(history);
+			}
+			@Override
+			public void error(ClearBladeException exception){
+				ClearBlade.setInitError(true);
+				callback.error(exception);
+			}
+		});
+		
+		asyncFetch.execute(request);
 	}
 }

@@ -4,9 +4,12 @@ import com.clearblade.platform.api.ClearBladeException;
 import com.clearblade.platform.api.Code;
 import com.clearblade.platform.api.CodeCallback;
 import com.clearblade.platform.api.Collection;
+import com.clearblade.platform.api.DataCallback;
+import com.clearblade.platform.api.History;
 import com.clearblade.platform.api.InitCallback;
 import com.clearblade.platform.api.Item;
-import com.clearblade.platform.api.DataCallback;
+import com.clearblade.platform.api.Message;
+import com.clearblade.platform.api.MessageCallback;
 import com.clearblade.platform.api.Query;
 import com.clearblade.platform.api.User;
 
@@ -15,10 +18,14 @@ public abstract class PlatformCallback {
 	public DataCallback _callback;
 	public InitCallback _initCallback;
 	public CodeCallback _codeCallback;
+	public MessageCallback _messageCallback;
+	public MessageCallback _historyCallback;
 	public Item _item;
 	public Query _query;
 	public User _user;
 	public Code _code;
+	public Message _message;
+	public History _history;
 	
 	public PlatformCallback(Query query, DataCallback callback){
 		_query = query;
@@ -46,6 +53,16 @@ public abstract class PlatformCallback {
 		_codeCallback = callback;
 	}
 
+	public PlatformCallback(Message message, MessageCallback callback){
+		_message = message;
+		_messageCallback = callback;
+	}
+	
+	public PlatformCallback(History history, MessageCallback callback){
+		_history = history;
+		_messageCallback = callback;
+	}
+	
 	public abstract void done(String response);
 	public void error(ClearBladeException exception){
 		

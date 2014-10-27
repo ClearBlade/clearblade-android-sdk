@@ -15,9 +15,9 @@ public class History {
 		JsonElement toJsonElement = new JsonParser().parse(json);
 		// Get store JsonElement as JsonArray
 		JsonArray array = toJsonElement.getAsJsonArray();
-		// If the array size is 0, then no item was found; Throw ClearBladeExcepetion
 		if(array.size() == 0){
-			throw new ClearBladeException("Failed to parse history response");
+			historyArray = new HistoryItem[0];
+			return historyArray;
 		}
 		ArrayList<HistoryItem> al = new ArrayList<HistoryItem>();
 		

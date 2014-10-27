@@ -114,14 +114,11 @@ public class Message {
 		UserTask asyncFetch = new UserTask(new PlatformCallback(history, callback){
 			@Override
 			public void done(String response){
-				//authToken = getPropertyValueFromJSONString("user_token", response);
-				//callback.done(true);
 				try {
 					history.loadHistoryJSON(response);
 				} catch (ClearBladeException e) {
 					e.printStackTrace();
 				}
-				//System.out.println("what the heck is happening");
 				callback.done(history);
 			}
 			@Override

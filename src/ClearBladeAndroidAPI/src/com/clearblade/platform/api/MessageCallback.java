@@ -18,4 +18,8 @@ public class MessageCallback {
 	public void done(String topic, String message, int qos) {
 		
 	}
+	
+	public void done(History history){
+		
+	}
 }

@@ -1,4 +1,4 @@
-package com.clearblade.platform.api.internal;
+package com.clearblade.platform.api;
 
 import android.os.AsyncTask;
 

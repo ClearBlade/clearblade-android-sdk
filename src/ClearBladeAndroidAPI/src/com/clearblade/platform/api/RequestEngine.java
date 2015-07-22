@@ -1,4 +1,4 @@
-package com.clearblade.platform.api.internal;
+package com.clearblade.platform.api;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -20,8 +20,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.security.cert.X509Certificate;
-
-import com.clearblade.platform.api.ClearBlade;
 
 import android.util.Log;
 

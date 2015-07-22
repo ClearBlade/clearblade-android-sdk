@@ -1,10 +1,9 @@
-package com.clearblade.platform.api.internal;
+package com.clearblade.platform.api;
 
 import java.util.Map.Entry;
 
 import android.net.Uri;
 
-import com.clearblade.platform.api.ClearBlade;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 /**

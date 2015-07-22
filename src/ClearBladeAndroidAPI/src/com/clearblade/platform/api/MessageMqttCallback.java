@@ -1,4 +1,4 @@
-package com.clearblade.platform.api.internal;
+package com.clearblade.platform.api;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;

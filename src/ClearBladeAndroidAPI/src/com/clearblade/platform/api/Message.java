@@ -8,13 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-import com.clearblade.platform.api.internal.MessageReceiver;
 import com.clearblade.platform.api.internal.MessageService;
-import com.clearblade.platform.api.internal.PlatformCallback;
-import com.clearblade.platform.api.internal.RequestEngine;
-import com.clearblade.platform.api.internal.RequestProperties;
-import com.clearblade.platform.api.internal.UserTask;
-import com.clearblade.platform.api.internal.Util;
 
 
 public class Message {

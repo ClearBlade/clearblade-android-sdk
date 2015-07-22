@@ -1,17 +1,5 @@
-package com.clearblade.platform.api.internal;
+package com.clearblade.platform.api;
 
-import com.clearblade.platform.api.ClearBladeException;
-import com.clearblade.platform.api.Code;
-import com.clearblade.platform.api.CodeCallback;
-import com.clearblade.platform.api.Collection;
-import com.clearblade.platform.api.DataCallback;
-import com.clearblade.platform.api.History;
-import com.clearblade.platform.api.InitCallback;
-import com.clearblade.platform.api.Item;
-import com.clearblade.platform.api.Message;
-import com.clearblade.platform.api.MessageCallback;
-import com.clearblade.platform.api.Query;
-import com.clearblade.platform.api.User;
 
 public abstract class PlatformCallback {
 	public Collection _collection;

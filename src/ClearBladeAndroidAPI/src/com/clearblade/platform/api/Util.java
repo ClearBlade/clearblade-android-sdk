@@ -1,8 +1,6 @@
-package com.clearblade.platform.api.internal;
+package com.clearblade.platform.api;
 
 import android.util.Log;
-
-import com.clearblade.platform.api.ClearBlade;
 
 public class Util {
 	

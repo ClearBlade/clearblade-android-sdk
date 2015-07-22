@@ -1,11 +1,10 @@
-package com.clearblade.platform.api.internal;
+package com.clearblade.platform.api;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.clearblade.platform.api.Item;
-import com.clearblade.platform.api.MessageCallback;
+import com.clearblade.platform.api.internal.MessageService;
 
 
  public class MessageReceiver extends BroadcastReceiver{

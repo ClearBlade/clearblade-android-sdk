@@ -1,4 +1,4 @@
-package com.clearblade.platform.api.internal;
+package com.clearblade.platform.api;
 /**
  * This class consists of methods that configure and create ApiResponse objects.
  * 

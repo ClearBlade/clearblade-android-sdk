@@ -7,11 +7,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.clearblade.platform.api.internal.DataTask;
-import com.clearblade.platform.api.internal.PlatformCallback;
-import com.clearblade.platform.api.internal.PlatformResponse;
-import com.clearblade.platform.api.internal.RequestEngine;
-import com.clearblade.platform.api.internal.RequestProperties;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

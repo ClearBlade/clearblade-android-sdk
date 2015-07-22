@@ -1,6 +1,5 @@
 package com.clearblade.platform.api;
 
-import com.clearblade.platform.api.internal.RequestEngine;
 import com.google.gson.JsonArray;
 
 public class QueryResponse {

@@ -1,9 +1,5 @@
 package com.clearblade.platform.api;
 
-import com.clearblade.platform.api.internal.PlatformCallback;
-import com.clearblade.platform.api.internal.RequestEngine;
-import com.clearblade.platform.api.internal.RequestProperties;
-import com.clearblade.platform.api.internal.UserTask;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 

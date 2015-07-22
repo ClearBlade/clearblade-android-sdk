@@ -4,8 +4,6 @@ import java.util.HashMap;
 
 import android.util.Log;
 
-import com.clearblade.platform.api.internal.Util;
-
 
 /**
  * This class consists exclusively of static methods that manage API configurations, initialization, and API information

@@ -23,8 +23,31 @@ public class Code {
 		request = new RequestEngine();
 	}
 	
-	public void execute(final CodeCallback callback){
+	public void executeWithParams(final CodeCallback callback){
 		RequestProperties headers = new RequestProperties.Builder().method("POST").endPoint("api/v/1/code/" +Util.getSystemKey() + "/" + serviceName).body(parameters).build();
+		request.setHeaders(headers);
+		DataTask asyncFetch = new DataTask(new PlatformCallback(this, callback) {
+			
+			@Override
+			public void done(String response) {
+				JsonObject codeResponse = convertJsonToJsonObject(response);
+				if(codeResponse != null){
+					callback.done(codeResponse);
+				}else{
+					callback.error(new ClearBladeException("Failed to parse code response"));
+				}
+			}
+			
+			@Override
+			public void error(ClearBladeException exception) {
+				callback.error(exception);
+			}
+		});
+		asyncFetch.execute(request);
+	}
+	
+	public void executeWithoutParams(final CodeCallback callback){
+		RequestProperties headers = new RequestProperties.Builder().method("POST").endPoint("api/v/1/code/" +Util.getSystemKey() + "/" + serviceName).build();
 		request.setHeaders(headers);
 		DataTask asyncFetch = new DataTask(new PlatformCallback(this, callback) {
 			

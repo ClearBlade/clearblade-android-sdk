@@ -2,6 +2,16 @@ package com.clearblade.platform.api;
 
 import java.util.Iterator;
 
+import com.clearblade.platform.api.internal.DataTask;
+import com.clearblade.platform.api.internal.PlatformCallback;
+import com.clearblade.platform.api.internal.RequestEngine;
+import com.clearblade.platform.api.internal.RequestProperties;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
+
 
 /**
  * This class consists exclusively of instance methods that operate on ClearBlade Collections.
@@ -52,7 +62,7 @@ public class Collection implements Iterable<Item>{
 	private Query query;			// string to filter data by
 	private Item[] itemArray;		// array that stores all Items
 
-	//private RequestEngine request;	// used to make API requests
+	private RequestEngine request;	// used to make API requests
 
 	/**
 	 * Constructs a new ClearBladeCollection of the specified type
@@ -66,6 +76,49 @@ public class Collection implements Iterable<Item>{
 		this.itemArray = null;
 	}
 	
+	
+	public void create(final DataCallback callback) {
+		request = new RequestEngine();
+		RequestProperties headers = new RequestProperties.Builder().method("POST").endPoint("api/data/" + collectionId).build();
+		request.setHeaders(headers);
+		DataTask asyncFetch = new DataTask(new PlatformCallback(this, callback) {
+			
+			@Override
+			public void done(String response) {
+				JsonObject createResponse = convertJsonToJsonObject(response);
+				if (createResponse != null) {
+					callback.done(createResponse);
+				} else {
+					callback.error(new ClearBladeException("Failed to parse response"));
+				}
+			}
+			
+			@Override
+			public void error(ClearBladeException exception) {
+				callback.error(exception);
+			}
+		});
+		asyncFetch.execute(request);
+	}
+	
+	private JsonObject convertJsonToJsonObject(String json) {
+		// parse json string in to JsonElement
+		try {
+			JsonElement toObject = new JsonParser().parse(json);
+			return toObject.getAsJsonObject();
+		}catch(JsonSyntaxException mfe){
+			return null;
+		}catch(IllegalStateException ise){
+			return null;
+		}
+	}
+	
+	
+	public void update(Query query, JsonObject changes, final DataCallback callback) {
+		query.setCollectionId(collectionId);
+		
+	}
+	
 	/** 
 	 * Deletes all Items that are saved in the collection in the Cloud synchronously.
 	 * <p>Deleted Items will be stored locally in the Collection.</p>
@@ -73,7 +126,7 @@ public class Collection implements Iterable<Item>{
 	 * <strong>*Runs in its own asynchronous task*</strong>
 	 * @throws ClearBladeException will be returned in the callback error function
 	 */
-	public void clear(DataCallback callback) {
+	public void remove(DataCallback callback) {
 		Query query = new Query(collectionId);
 		query.remove(callback);
 	}

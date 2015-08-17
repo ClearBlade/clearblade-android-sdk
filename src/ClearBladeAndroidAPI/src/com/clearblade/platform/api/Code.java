@@ -23,6 +23,11 @@ public class Code {
 		request = new RequestEngine();
 	}
 	
+	public Code(String serName){
+		serviceName = serName;
+		request = new RequestEngine();
+	}
+	
 	public void executeWithParams(final CodeCallback callback){
 		RequestProperties headers = new RequestProperties.Builder().method("POST").endPoint("api/v/1/code/" +Util.getSystemKey() + "/" + serviceName).body(parameters).build();
 		request.setHeaders(headers);

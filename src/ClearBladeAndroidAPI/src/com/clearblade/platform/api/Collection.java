@@ -77,9 +77,10 @@ public class Collection implements Iterable<Item>{
 	}
 	
 	
-	public void create(final DataCallback callback) {
+	public void create(String columns, final DataCallback callback) {
+		JsonObject cols = convertJsonToJsonObject(columns);
 		request = new RequestEngine();
-		RequestProperties headers = new RequestProperties.Builder().method("POST").endPoint("api/data/" + collectionId).build();
+		RequestProperties headers = new RequestProperties.Builder().method("POST").endPoint("api/data/" + collectionId).body(cols).build();
 		request.setHeaders(headers);
 		DataTask asyncFetch = new DataTask(new PlatformCallback(this, callback) {
 			
@@ -114,8 +115,23 @@ public class Collection implements Iterable<Item>{
 	}
 	
 	
-	public void update(Query query, JsonObject changes, final DataCallback callback) {
+	public void update(final DataCallback callback) {
+		Query query = new Query();
 		query.setCollectionId(collectionId);
+		query.fetch(new DataCallback(){
+
+			@Override
+			public void done(QueryResponse response) {
+				itemArray = response.getDataItems();
+				callback.done(response);
+			}
+
+			@Override
+			public void error(ClearBladeException exception) {
+				callback.error(exception);
+			}
+			
+		});
 		
 	}
 	

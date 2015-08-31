@@ -160,11 +160,13 @@ public class ClearBlade {
 			user = null;
 		}
 		
-		if (systemKey == null) {
-			throw new IllegalArgumentException("systemKey must be a non-empty Strings");
+		if (systemKey.equals("")) {
+			callback.error(new ClearBladeException("systemKey must be a non-empty Strings"));
+			return;
 		}
-		if(systemSecret == null) {
-			throw new IllegalArgumentException("systemSecret can not be null");
+		if(systemSecret.equals("")) {
+			callback.error(new ClearBladeException("systemKey must be a non-empty Strings"));
+			return;
 		}
 
 		Util.setSystemKey(systemKey);
@@ -202,12 +204,13 @@ public class ClearBlade {
 	 */
 	public static void initialize(String systemKey, String systemSecret, HashMap<String,Object> initOptions, InitCallback callback){
 				
-		if (systemKey == null) {
-			throw new IllegalArgumentException("systemKey must be a non-empty Strings");
+		if (systemKey.equals("")) {
+			callback.error(new ClearBladeException("systemKey must be a non-empty Strings"));
+			return;
 		}
-		
-		if(systemSecret == null) {
-			throw new IllegalArgumentException("systemSecret can not be null");
+		if(systemSecret.equals("")) {
+			callback.error(new ClearBladeException("systemKey must be a non-empty Strings"));
+			return;
 		}
 		
 		//validate options

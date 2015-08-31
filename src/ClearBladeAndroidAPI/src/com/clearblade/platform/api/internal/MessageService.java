@@ -16,6 +16,8 @@ import android.content.Intent;
 import android.provider.Settings.Secure;
 import android.util.Log;
 
+import com.clearblade.platform.api.ClearBladeException;
+import com.clearblade.platform.api.InitCallback;
 import com.clearblade.platform.api.Item;
 import com.clearblade.platform.api.ClearBlade;
 import com.clearblade.platform.api.User;
@@ -38,8 +40,11 @@ public class MessageService implements MqttCallback {
     
 	private Context context;
 	
-	public void initializeAndConnect(Context ctx, int qos) {
+	private InitCallback connectCallback;
+	
+	public void initializeAndConnect(Context ctx, int qos, InitCallback callback) {
 		
+		connectCallback = callback;
 		context = ctx;
 		qualityOfService = qos;
 		deviceId = "ad" + Secure.getString(ctx.getContentResolver(), Secure.ANDROID_ID);
@@ -58,10 +63,10 @@ public class MessageService implements MqttCallback {
 			opts.setPassword(Util.getSystemKey().toCharArray());
 		}
 		
-		connect(ctx);
+		connect(ctx, callback);
 	}
 	
-	private void connect(Context ctx) {
+	private void connect(Context ctx, final InitCallback callback) {
 		
 		try {
             androidClient = new MqttAndroidClient(ctx, url, deviceId, clientPersistance);
@@ -70,12 +75,14 @@ public class MessageService implements MqttCallback {
 				@Override
 				public void onFailure(IMqttToken arg0, Throwable arg1) {
 					Log.i(DEBUG_TAG, "Could not connect to MQTT broker: " + arg1.getMessage());
+					callback.error(new ClearBladeException(arg1.getMessage()));
 					
 				}
 
 				@Override
 				public void onSuccess(IMqttToken arg0) {
 					Log.i(DEBUG_TAG, "Client Connected");
+					callback.done(true);
 				}
             	
             });
@@ -160,7 +167,7 @@ public class MessageService implements MqttCallback {
     public void connectionLost(Throwable throwable) {
     	Log.i(DEBUG_TAG, throwable.getMessage() + ". Attempting to reconnect");
 		androidClient = null;
-		connect(context);
+		connect(context, connectCallback);
     }
 
     @Override

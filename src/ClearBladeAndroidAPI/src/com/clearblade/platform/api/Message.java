@@ -23,18 +23,18 @@ public class Message {
 	int qualityOfService;
 	Context context;
 
-	public Message(Context ctx) {
+	public Message(Context ctx, InitCallback callback) {
 		
 		context = ctx;
 	    qualityOfService = 0;
 	    
 	    messageService = new MessageService();
-		messageService.initializeAndConnect(ctx, qualityOfService);
+		messageService.initializeAndConnect(ctx, qualityOfService, callback);
 		subscribed = new HashSet<String>();
 	}
 	
 	//constructor to set custom QoS level
-	public Message(Context ctx, int qos) {
+	public Message(Context ctx, int qos, InitCallback callback) {
 		
 		context = ctx;
 		//check qos is valid, if not return error
@@ -46,7 +46,7 @@ public class Message {
 		qualityOfService = qos;
 
         messageService = new MessageService();
-		messageService.initializeAndConnect(ctx, qualityOfService);
+		messageService.initializeAndConnect(ctx, qualityOfService, callback);
 		subscribed = new HashSet<String>();
 	}
 	

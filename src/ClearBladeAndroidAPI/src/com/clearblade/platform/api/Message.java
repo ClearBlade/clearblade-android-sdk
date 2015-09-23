@@ -19,7 +19,7 @@ import com.clearblade.platform.api.internal.Util;
 public class Message {
 	
 	MessageService messageService;
-	HashSet<String> subscribed;
+	public static HashSet<String> subscribed;
 	int qualityOfService;
 	Context context;
 

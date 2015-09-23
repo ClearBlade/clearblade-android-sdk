@@ -1,5 +1,7 @@
 package com.clearblade.platform.api.internal;
 
+import java.util.Iterator;
+
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
@@ -21,6 +23,7 @@ import com.clearblade.platform.api.InitCallback;
 import com.clearblade.platform.api.Item;
 import com.clearblade.platform.api.ClearBlade;
 import com.clearblade.platform.api.User;
+import com.clearblade.platform.api.Message;
 
 
 public class MessageService implements MqttCallback {
@@ -32,6 +35,7 @@ public class MessageService implements MqttCallback {
 	
 	private String deviceId;
 	private int qualityOfService;
+	private boolean isSubscribed = false;
 
 	//mqtt paho stuff
 	private MqttClientPersistence clientPersistance = null;
@@ -82,6 +86,12 @@ public class MessageService implements MqttCallback {
 				@Override
 				public void onSuccess(IMqttToken arg0) {
 					Log.i(DEBUG_TAG, "Client Connected");
+					if (isSubscribed) {
+						Iterator<String> it = Message.subscribed.iterator();
+						while (it.hasNext()) {
+							subscribe(it.next());
+						}
+					}
 					callback.done(true);
 				}
             	
@@ -137,6 +147,7 @@ public class MessageService implements MqttCallback {
 		if (androidClient.isConnected()) {
 			try {
 				androidClient.subscribe(topic, qualityOfService);
+				isSubscribed = true;
 				return true;
 			} catch (MqttException err) {
 				Log.i(DEBUG_TAG, err.getLocalizedMessage());

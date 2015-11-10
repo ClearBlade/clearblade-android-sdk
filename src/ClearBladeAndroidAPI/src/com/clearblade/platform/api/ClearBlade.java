@@ -260,10 +260,10 @@ public class ClearBlade {
 		if(allowUntrusted != null){
 			setAllowUntrusted(allowUntrusted.booleanValue());
 		}
-		
+
 		String email = (String) initOptions.get("email");
 		final String password = (String) initOptions.get("password");
-		
+
 		user = new User(email);
 		
 		if(!initError && email != null && !registerUser.booleanValue()){
@@ -279,6 +279,101 @@ public class ClearBlade {
 		}
 		
 	}
+
+
+	/**
+	 * Initializes API with given system credentials, options and client certificate.
+	 * Upon Success/Failure, appropriate callback methods are triggered
+	 * Must be called prior to any API calls.
+	 * Available init options:
+	 *  clientCertPassword - Password set for the PK12 file - Required<br>
+	 *  certPath - Path where certificate PK12 file is stored on the device - Required<br>
+	 * 	platformURL - Custom URL for the platform Default - https://platform.clearblade.com<br>
+	 * 	messagingURL - Custom Messaging URL Default - tcp://messaging.clearblade.com:1883<br>
+	 * 	logging - Boolean to enable ClearBlade Internal API logging Default - false<br>
+	 * 	callTimeout - Int number of milliseconds for call timeouts Default - 30000 (30 seconds)<br>
+	 *  allowUntrusted - Boolean to connect to a platform server without a signed SSL certificate Default - false
+	 * Throws IllegalArgumentException if systemKey or systemSecret is null
+	 * @param systemKey The key used to identify the System in use
+	 * @param systemSecret The secret used to verify the System in use
+	 * @param initOptions HashMap of initialization options
+	 * @param callback InitCallback for when initialization is done (success of failure)
+	 * @throws IllegalArgumentException
+	 */
+	public static void initializeWithCert(String systemKey, String systemSecret, HashMap<String,Object> initOptions, InitCallback callback){
+
+		if (systemKey.equals("")) {
+			callback.error(new ClearBladeException("systemKey must be a non-empty Strings"));
+			return;
+		}
+		if(systemSecret.equals("")) {
+			callback.error(new ClearBladeException("systemKey must be a non-empty Strings"));
+			return;
+		}
+
+		Util.setSystemKey(systemKey);
+		Util.setSystemSecret(systemSecret);
+
+		//init platform url
+		String platURL = (String) initOptions.get("platformURL");
+		if(platURL != null){
+			uri = platURL;
+		}else{
+			uri = "https://platform.clearblade.com";
+		}
+
+		//init messaging url
+		String messURL = (String) initOptions.get("messagingURL");
+		if(messURL != null){
+			messageUrl = messURL;
+		}else{
+			messageUrl = "tcp://messaging.clearblade.com:1883";
+		}
+
+		//init logging
+		Boolean log = (Boolean) initOptions.get("logging");
+		if(log != null){
+			setLogging(log);
+		}
+
+		//init call timeout
+		Integer timeout = (Integer) initOptions.get("callTimeout");
+		if(timeout != null && timeout > 0){
+			setCallTimeOut(timeout);
+		}else{
+			setCallTimeOut(30000);
+		}
+
+		//init untrusted
+		Boolean allowUntrusted = (Boolean) initOptions.get("allowUntrusted");
+		if(allowUntrusted != null){
+			setAllowUntrusted(allowUntrusted.booleanValue());
+		}
+
+		//init client cert password
+		String clientCertPass = (String) initOptions.get("clientCertPassword");
+		if(clientCertPass == null) {
+			callback.error(new ClearBladeException("Client Cert password cannot be empty"));
+			return;
+		} else {
+			Util.setCertPassword(clientCertPass);
+		}
+
+		//init PKCS12 file path
+		String certPath = (String) initOptions.get("certPath");
+		if(certPath == null || certPath.equals("")) {
+			callback.error(new ClearBladeException("Cert path cannot be empty"));
+			return;
+		} else {
+			Util.setCertPath(certPath);
+		}
+
+		user = new User(null);
+
+		user.authWithCert(callback);
+
+	}
+
 
 	/**
 	 * Returns a boolean that specifies if the API will show internal Logs

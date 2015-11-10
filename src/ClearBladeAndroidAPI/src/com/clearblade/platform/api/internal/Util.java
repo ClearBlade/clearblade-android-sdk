@@ -8,6 +8,8 @@ public class Util {
 	
 	private static String systemKey;							// system Id
 	private static String systemSecret;						// system Password
+	private static String certPassword;						// certificate password
+	private static String certPath;							//certificate path
 	
 
 	public static void setSystemKey(String systemKey) {
@@ -17,6 +19,10 @@ public class Util {
 	public static void setSystemSecret(String systemSecret) {
 		Util.systemSecret = systemSecret;
 	}
+
+	public static void setCertPassword(String password) {Util.certPassword = password;}
+
+	public static void setCertPath(String path) {Util.certPath = path;}
 
 	
 	/**
@@ -40,7 +46,11 @@ public class Util {
 		return systemKey;
 	}
 
+	public static String getCertPath() { return certPath; }
+
 	protected static String getSystemSecret() {
 		return systemSecret;
 	}
+
+	protected static String getCertPassword() { return certPassword; }
 }

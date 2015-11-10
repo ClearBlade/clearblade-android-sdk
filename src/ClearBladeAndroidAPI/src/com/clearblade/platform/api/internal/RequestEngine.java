@@ -2,6 +2,9 @@ package com.clearblade.platform.api.internal;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,10 +15,15 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -53,7 +61,9 @@ import android.util.Log;
  */
 public class RequestEngine {
 	private final String TAG = "RequestEngine";
-	
+
+	private KeyStore keyStore;
+	private FileInputStream fis;
 	//internal flag for understanding the use of SSL on the platform server
 	private int isSSL = -1;
 	
@@ -127,9 +137,10 @@ public class RequestEngine {
 	 * is usually converted to a more useful object.
 	 * @private
 	 * @return result stores the condition of the ApiRequest
-	 * @throws IllegalArguementExecption will be thrown if headers is null
+	 * //@throws IllegalArguementExecption will be thrown if headers is null
 	 */
 	private PlatformResponse<String> request(){
+		String reqURL = this.headers.getUri().toLowerCase();
 		if(this.headers == null){
 			throw new IllegalArgumentException("The headers must not be null!");
 		}
@@ -148,6 +159,45 @@ public class RequestEngine {
 			if (isSSL() && ClearBlade.getAllowUntrusted()) {
 				ctx = createUntrustedManager(ctx);
 				HttpsURLConnection.setDefaultSSLSocketFactory(ctx.getSocketFactory());
+			}
+			if (reqURL.contains("/user/authwithssl")) {
+				String clientCertPassword = Util.getCertPassword();
+				try {
+					keyStore = KeyStore.getInstance("PKCS12");
+				} catch (KeyStoreException e) {
+					e.printStackTrace();
+				}
+
+				try {
+					fis = new FileInputStream(Util.getCertPath());
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+
+				try {
+					keyStore.load(fis, clientCertPassword.toCharArray());
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (NoSuchAlgorithmException e) {
+					e.printStackTrace();
+				} catch (CertificateException e) {
+					e.printStackTrace();
+				}
+
+				try {
+					KeyManagerFactory kmf = KeyManagerFactory.getInstance("X509");
+					kmf.init(keyStore, clientCertPassword.toCharArray());
+					KeyManager[] keyManagers = kmf.getKeyManagers();
+					SSLContext sslContext = SSLContext.getInstance("TLS");
+					sslContext.init(keyManagers, null, null);
+					HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.getSocketFactory());
+				} catch (NoSuchAlgorithmException e) {
+					e.printStackTrace();
+				} catch (UnrecoverableKeyException e) {
+					e.printStackTrace();
+				} catch (KeyStoreException e) {
+					e.printStackTrace();
+				}
 			}
 			String method = this.headers.getMethod();
 			String charset = "UTF-8";
@@ -168,12 +218,12 @@ public class RequestEngine {
 			// to get token on the auth request and to register new user. also both token and key/secret 
 			// are needed for logout and auth check requests. so if the url cotains the logout or check 
 			// endpoints, we add all 3, otherwise we add token
-			String reqURL = this.headers.getUri().toLowerCase();
 			boolean isLogoutOrAuthCheck = (reqURL.contains("/user/logout") ||
 											reqURL.contains("/user/checkauth"));
 			boolean isAuthOrReg = (reqURL.contains("/user/auth") ||
 									reqURL.contains("/user/anon") ||
-									reqURL.contains("/user/reg"));
+									reqURL.contains("/user/reg") ||
+									reqURL.contains("/user/authWithSSL"));
 			String userToken = ClearBlade.getCurrentUser().getAuthToken();
 			if(isLogoutOrAuthCheck){
 				urlConnection.setRequestProperty("CLEARBLADE-SYSTEMKEY", Util.getSystemKey());

@@ -34,7 +34,29 @@ public class User {
 	public String getAuthToken(){
 		return authToken;
 	}
-	
+
+	public void authWithCert(final InitCallback callback) {
+		request = new RequestEngine();
+
+		RequestProperties headers = new RequestProperties.Builder().method("POST").endPoint("api/v/3/user/authWithSSL").build();
+		request.setHeaders(headers);
+
+		UserTask asyncFetch = new UserTask((new PlatformCallback(this, callback) {
+			@Override
+			public void done(String response) {
+				authToken = getPropertyValueFromJSONString("user_token", response);
+				callback.done(true);
+			}
+			@Override
+			public void error(ClearBladeException exception){
+				ClearBlade.setInitError(true);
+				callback.error(exception);
+			}
+		}));
+
+		asyncFetch.execute(request);
+	}
+
 	public void authWithCurrentUser(String password, final InitCallback callback){
 		//get auth token with current user
 		request = new RequestEngine();

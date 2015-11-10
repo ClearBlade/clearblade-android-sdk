@@ -216,7 +216,11 @@ public class RequestProperties {
 			timeout = ClearBlade.getCallTimeOut();
 		}
 		if(!endPoint.equals(""))
-			uri += "/" + endPoint;
+			if (endPoint.equals("api/v/3/user/authWithSSL")) {
+				uri += ":8950/" + endPoint;
+			} else {
+				uri += "/" + endPoint;
+			}
 		if(!qs.equals(""))
 			uri += "?" + qs;
 	}

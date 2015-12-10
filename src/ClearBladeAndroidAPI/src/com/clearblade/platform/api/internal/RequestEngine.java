@@ -160,7 +160,7 @@ public class RequestEngine {
 				ctx = createUntrustedManager(ctx);
 				HttpsURLConnection.setDefaultSSLSocketFactory(ctx.getSocketFactory());
 			}
-			if (reqURL.contains("/user/authwithssl")) {
+			if (reqURL.contains("/user/authwithssl")) {	// Use SSL certificate to make the HTTP request
 				String clientCertPassword = Util.getCertPassword();
 				try {
 					keyStore = KeyStore.getInstance("PKCS12");

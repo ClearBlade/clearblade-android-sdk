@@ -1,11 +1,7 @@
 Android-API
 ===========
 The android-api project provides source and binary for interacting with the ClearBlade platform.  Javadoc can be found in the source
-download and publically hosted here https://platform.clearblade.com/static/docs/android/index.html
-
-Project Management
-------------------
-This project is managed via jazzhub.  https://hub.jazz.net/project/AaronAllsbrook2/ClearBlade%20Android-API
+download and publically hosted here https://docs.clearblade.com/v/3/static/androidapi/index.html
 
 Dependencies
 ------------

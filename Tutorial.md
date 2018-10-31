@@ -1,12 +1,3 @@
-+++
-date = "2015-06-26T13:24:13-05:00"
-draft = false
-title = "Tutorial"
-[menu.main]
-Identifier = "Android-Tutorial"
-parent = "Android"
-+++
-
 # Overview  
 
 Welcome the ClearBlade Tutorial.  The goal of this tutorial is not to bore you with tedious details of client side languages but instead quickly walk you through the basics of creating a highly scalable and flexible backend.  
